@@ -6,7 +6,11 @@ InfiniTiC is a mod that adds materials and recipes to Tinker's Construct based o
 
 ## Credit where credit is due.
 
-Various people (TODO: Credit people), but mainly Bonii, mDiyo, and the person on IRC who helped me, whose name I can't remember right at this moment.
+- Notch, Mojang, & others for creating and updating Minecraft
+- LexManos, CPW, & others for creating and updating Forge
+- mDiyo for first constructing TiC
+- Bonii for continuing the mod, and for the updated IguanaTweaks repo (from which much of this repo was based)
+- tterag, diesieben07 for giving a hand on IRC
 
 ## How to build
 
