@@ -1,14 +1,23 @@
-IguanaTweaks for Tinkers Construct
-==================================
+# InfiniTiC
 
-The not really official repo for Iguana Tweaks for [Tinker's Construct](https://github.com/SlimeKnights/TinkersConstruct).
-Current Minecraft Version: 1.7.10
+> Because sometimes just going extra isn't going far enough...
 
-Everything is highly work in Progress.
+InfiniTiC is a mod that adds materials and recipes to Tinker's Construct based on a set of JSON config files.  In the future there will be a repository of config files for various mods, so that it's relatively easy to add files as and when you like.  This mod works on my computer, but that is currently no guarantee of anything at all.  Use at your own risk.  This mod is not stable enough to be used in a nuclear environment.
 
-##Special thanks go to:
-* Glassmaker for starting the port and being awesome in general
-* mDiyo, progwml6, Sunstrike and everybody else who worked on Tinkers and Mantle
-* Squeek502 for [TiC Tooltips](https://github.com/squeek502/TiC-Tooltips) which allowed me to do Tooltips properly
-* iguana_man for creating the original Iguana Tweaks for Tinkers Construct
-* MoxieGrrl for lots of testing and being a darling.
+## Credit where credit is due.
+
+Various people (TODO: Credit people), but mainly Bonii, mDiyo, and the person on IRC who helped me, whose name I can't remember right at this moment.
+
+## How to build
+
+```sh
+git clone yada yada
+cd InfiniTiC
+./gradlew build
+```
+
+May or may not work.
+
+## To Do:
+
+See the extensive issues list.  If the issues list is not extensive, shout at me to put all my todos there.
