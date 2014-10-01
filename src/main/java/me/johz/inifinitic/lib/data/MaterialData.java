@@ -40,8 +40,21 @@ public class MaterialData {
 	
 	public void init() {
 		setFluid(json.name);
+		setLocalize(json.name);
 		setMaterial();
 		setRecipes();
+	}
+	
+	private void setLocalize(String name) {
+		for (String[] local: json.localizations) {
+			if (local.length != 2) continue;
+			
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("fluid.tile." + name, local[1]);
+			map.put("tile." + name + ".name", local[1]);
+			map.put("material." + name, local[1]);
+			LanguageRegistry.instance().injectLanguage(local[0], map);
+		}
 	}
 
 	private void setRecipes() {
@@ -149,14 +162,5 @@ public class MaterialData {
 		}
 		
 		FluidType.registerFluidType(name, fluidBlock, 0, 300, fluid, true);
-		
-		for (String[] local: json.localizations) {
-			if (local.length != 2) continue;
-			
-			HashMap<String, String> map = new HashMap<String, String>();
-			map.put("fluid.tile." + name, local[1]);
-			map.put("tile." + name + ".name", local[1]);
-			LanguageRegistry.instance().injectLanguage(local[0], map);
-		}
 	}
 }
