@@ -11,9 +11,9 @@ Various people (TODO: Credit people), but mainly Bonii, mDiyo, and the person on
 ## How to build
 
 ```sh
-git clone yada yada
-cd InfiniTiC
-./gradlew build
+$ git clone yada yada
+$ cd InfiniTiC
+$ ./gradlew build
 ```
 
 May or may not work.
