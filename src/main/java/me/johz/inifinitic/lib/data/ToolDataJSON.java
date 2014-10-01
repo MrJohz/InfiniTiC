@@ -2,9 +2,11 @@ package me.johz.inifinitic.lib.data;
 
 import java.awt.Color;
 
+import tconstruct.library.TConstructRegistry;
 import me.johz.inifinitic.InfiniTiC;
+import me.johz.inifinitic.lib.errors.JSONValidationException;
 
-public class ToolDataJSON {
+public class ToolDataJSON implements IJson {
 	
 	// Unique material id - should be unique or -1.
 	int ID;
@@ -34,6 +36,19 @@ public class ToolDataJSON {
 	
 	public Color getColorType() {
 		return Color.decode(color);
+	}
+
+	@Override
+	public void validate() throws JSONValidationException {
+		if (TConstructRegistry.toolMaterials.containsKey(ID)) {
+			throw new JSONValidationException("ID already exists");
+		}
+		
+		try {
+			getColorType();
+		} catch (NumberFormatException e) {
+			throw new JSONValidationException("Invalid color string (must be 3-part hexadecimal, beginning with '#'");
+		}
 	}
 	
 }

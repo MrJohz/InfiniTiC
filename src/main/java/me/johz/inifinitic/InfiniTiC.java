@@ -22,7 +22,6 @@ public class InfiniTiC {
 	 * THE BIG LONG LIST OF THINGS TO DO:
 	 * 
 	 * TODO: JSON validation.  Anything would be better than currently.
-	 * TODO: Not adding things that don't need to be added (liquids etc)
 	 * TODO: Auto-select material ids from range
 	 * TODO: Buckets
 	 * TODO: Get TiC to understand how much liquid is in the smeltery
@@ -83,7 +82,7 @@ public class InfiniTiC {
     		
     		MaterialJSON m = JsonConfigHelper.dataFromJSON(file);
     		if (m != null) {
-    			ds.add(new MaterialData(m));
+    			ds.add(new MaterialData(m, file.getAbsolutePath()));
     		} else {
     			LOGGER.warn("Could not read or parse file '" + file.getName() + "'");
     		}

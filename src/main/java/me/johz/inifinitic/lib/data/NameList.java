@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import me.johz.inifinitic.lib.errors.JSONValidationException;
 import me.johz.inifinitic.lib.helpers.GenericHelper;
 
-public class NameList {
+public class NameList implements IJson {
 	
 	public String[] oredict;
 	public String[] ingots;
@@ -82,6 +83,11 @@ public class NameList {
 		}
 		
 		return ls;
+	}
+
+	@Override
+	public void validate() throws JSONValidationException {
+		// Nothing needs validating here, afaik
 	}
 	
 }

@@ -5,7 +5,9 @@ import java.util.HashMap;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
+import me.johz.inifinitic.InfiniTiC;
 import me.johz.inifinitic.blocks.BlockInfiniFluid;
+import me.johz.inifinitic.lib.errors.JSONValidationException;
 import me.johz.inifinitic.lib.helpers.GenericHelper;
 import me.johz.inifinitic.lib.helpers.NameConversionHelper;
 import net.minecraft.block.Block;
@@ -34,8 +36,16 @@ public class MaterialData {
 	public Fluid fluid;
 	public Block fluidBlock;
 	
-	public MaterialData(MaterialJSON json) {
+	public MaterialData(MaterialJSON json, String filename) {
 		this.json = json;
+		
+		try {
+			json.validate();
+		} catch (JSONValidationException e) {
+			InfiniTiC.LOGGER.error("InfiniTiC Is About To Break!");
+			InfiniTiC.LOGGER.error("Invalid JSON detected, filename = " + filename);
+			InfiniTiC.LOGGER.error("Logged error was: " + e.getReason());
+		}
 	}
 	
 	public void init() {
@@ -144,7 +154,7 @@ public class MaterialData {
 			.setTemperature(1300);
 		
 		boolean isRegistered = !(FluidRegistry.registerFluid(fluid));
-		fluidBlock = new BlockInfiniFluid(fluid, Material.water, json.toolData.getColorType());
+		fluidBlock = new BlockInfiniFluid(fluid, Material.lava, json.toolData.getColorType());
 		fluidBlock.setBlockName(name);
 		GameRegistry.registerBlock(fluidBlock, "fluid.molten." + name);
 		fluid.setUnlocalizedName(fluidBlock.getUnlocalizedName());

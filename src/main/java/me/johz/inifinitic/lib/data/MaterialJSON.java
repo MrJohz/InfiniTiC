@@ -3,12 +3,13 @@ package me.johz.inifinitic.lib.data;
 import java.util.HashSet;
 import java.util.Set;
 
+import me.johz.inifinitic.lib.errors.JSONValidationException;
 import me.johz.inifinitic.lib.helpers.GenericHelper;
 import me.johz.inifinitic.lib.helpers.NameConversionHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class MaterialJSON {
+public class MaterialJSON implements IJson {
 	
 	public String name;
 	
@@ -20,7 +21,7 @@ public class MaterialJSON {
 	public ToolDataJSON toolData;
 	
 	public String renderblock;
-	public int renderblockMeta;
+	public int renderblockMeta = 0;
 	
 	@Override
 	public String toString() {
@@ -49,14 +50,29 @@ public class MaterialJSON {
 		String itemOreDict = type + GenericHelper.capitalizeFirstLetter(name);
 		items.addAll(OreDictionary.getOres(itemOreDict));
 		
-		for (String itemName: whitelist.getThings(type)) {
-			items.addAll(NameConversionHelper.getAllItems(itemName));
+		if (whitelist != null) {
+			for (String itemName: whitelist.getThings(type)) {
+				items.addAll(NameConversionHelper.getAllItems(itemName));
+			}
 		}
 		
-		for (String itemName: blacklist.getThings(type)) {
-			items.removeAll(NameConversionHelper.getAllItems(itemName));
+		if (blacklist != null) {
+			for (String itemName: blacklist.getThings(type)) {
+				items.removeAll(NameConversionHelper.getAllItems(itemName));
+			}
 		}
 		
 		return items.toArray(new ItemStack[items.size()]);
+	}
+
+	@Override
+	public void validate() throws JSONValidationException {
+		if (name == null) {
+			throw new JSONValidationException("Field 'name' is required and not present");
+		} else if (toolData == null) {
+			throw new JSONValidationException("Field 'toolData' is required and not present");
+		} else if (renderblock == null) {
+			throw new JSONValidationException("Field 'renderblock' is required and not present");
+		}
 	}
 }
