@@ -87,6 +87,9 @@ public class MaterialData {
 	}
 	
 	private void setMaterial() {
+		
+		// TODO: Work out how to check if there's a material pre-registered
+		
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setInteger("Id", json.toolData.ID);
 		tag.setString("Name", json.name);
@@ -127,13 +130,23 @@ public class MaterialData {
 			.setViscosity(6000)
 			.setTemperature(1300);
 		
-		FluidRegistry.registerFluid(fluid);
+		boolean isRegistered = !(FluidRegistry.registerFluid(fluid));
 		fluidBlock = new BlockInfiniFluid(fluid, Material.water, json.toolData.getColorType());
 		fluidBlock.setBlockName(name);
 		GameRegistry.registerBlock(fluidBlock, "fluid.molten." + name);
-		
 		fluid.setUnlocalizedName(fluidBlock.getUnlocalizedName());
-		fluid.setBlock(fluidBlock);
+		
+		if (isRegistered) {
+			fluid = FluidRegistry.getFluid(name + ".molten");
+			Block regFluidBlock = fluid.getBlock();
+			if (regFluidBlock != null) {
+				fluidBlock = regFluidBlock;
+			} else {
+				fluid.setBlock(fluidBlock);
+			}
+		} else {
+			fluid.setBlock(fluidBlock);
+		}
 		
 		FluidType.registerFluidType(name, fluidBlock, 0, 300, fluid, true);
 		

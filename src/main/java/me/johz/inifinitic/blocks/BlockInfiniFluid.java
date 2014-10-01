@@ -39,8 +39,6 @@ public class BlockInfiniFluid extends BlockFluidClassic {
 		((TextureMap)register).setTextureEntry(InfiniTiC.MODID + ":flowing_fluid", flow);
 		stillIcon = register.registerIcon(InfiniTiC.MODID + ":still_fluid");
 		flowingIcon = register.registerIcon(InfiniTiC.MODID + ":flowing_fluid");
-		
-		// TODO: Don't just overwrite fluids
 		this.getFluid().setIcons(stillIcon, flowingIcon);
 	}
 	
