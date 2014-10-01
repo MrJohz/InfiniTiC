@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "infinitic",
+    "name": "InfiniTiC",
+    "description": "Infinitise Tinker's Construct.",
+    "version": "0.0.1",
+    "mcversion": "1.7.10",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["Johz"],
+    "credits": "Tinker's Construct peeps.",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
