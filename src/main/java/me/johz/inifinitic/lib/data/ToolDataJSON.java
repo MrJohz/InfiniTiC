@@ -3,7 +3,6 @@ package me.johz.inifinitic.lib.data;
 import java.awt.Color;
 
 import tconstruct.library.TConstructRegistry;
-import me.johz.inifinitic.InfiniTiC;
 import me.johz.inifinitic.lib.errors.JSONValidationException;
 
 public class ToolDataJSON implements IJson {
@@ -27,7 +26,6 @@ public class ToolDataJSON implements IJson {
 	public int getColor(boolean withAlpha) {
 		Color col = getColorType();
 		if (withAlpha) {
-			InfiniTiC.LOGGER.info(col.getAlpha());
 			return col.getAlpha() << 24 | col.getRed() << 16 | col.getGreen() << 8 | col.getBlue();
 		} else {
 			return col.getRed() << 16 | col.getGreen() << 8 | col.getBlue();

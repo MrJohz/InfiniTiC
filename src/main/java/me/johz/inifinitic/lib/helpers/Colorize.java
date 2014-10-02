@@ -1,118 +1,62 @@
 package me.johz.inifinitic.lib.helpers;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
 
 import me.johz.inifinitic.InfiniTiC;
 
 public class Colorize {
 	
-	public static final int MAX_COLOR = 256;
-	
-	public static final float LUMINANCE_RED   = 0.2126f;
-	public static final float LUMINANCE_GREEN = 0.7152f;
-	public static final float LUMINANCE_BLUE  = 0.0722f;
-	
-	double hue        = 180;
-	double saturation =  50;
-	double lightness  =   0;
-	
-	int [] lum_red_lookup;
-	int [] lum_green_lookup;
-	int [] lum_blue_lookup;
-	
-	int [] final_red_lookup;
-	int [] final_green_lookup;
-	int [] final_blue_lookup;
+	BufferedImageOp filter;
+	int redColor;
+	int greenColor;
+	int blueColor;
 	
 	public Colorize( int red, int green, int blue ) {
-	   doInit();
+		redColor = red;
+		greenColor = green;
+		blueColor = blue;
 	}
 	
-	public Colorize( double t_hue, double t_sat, double t_bri ) {
-	   hue = t_hue;
-	   saturation = t_sat;
-	   lightness = t_bri;
-	   doInit();
-	}
-	
-	public Colorize( double t_hue, double t_sat ) {
-	   hue = t_hue;
-	   saturation = t_sat;
-	   doInit();
-	}
-	
-	public Colorize( double t_hue ) {
-	   hue = t_hue;
-	   doInit();
-	}
-	
-	public Colorize() {
-	   doInit();
-	}
-	
-	private void doInit() {
-	   lum_red_lookup   = new int [MAX_COLOR];
-	   lum_green_lookup = new int [MAX_COLOR];
-	   lum_blue_lookup  = new int [MAX_COLOR];
-	
-	   double temp_hue = hue / 360f;
-	   double temp_sat = saturation / 100f;
-	
-	   final_red_lookup   = new int [MAX_COLOR];
-	   final_green_lookup = new int [MAX_COLOR];
-	   final_blue_lookup  = new int [MAX_COLOR];
-	
-	   for( int i = 0; i < MAX_COLOR; ++i ) {
-	      lum_red_lookup  [i] = ( int )( i * LUMINANCE_RED );
-	      lum_green_lookup[i] = ( int )( i * LUMINANCE_GREEN );
-	      lum_blue_lookup [i] = ( int )( i * LUMINANCE_BLUE );
-	
-	      double temp_light = (double)i / 255f;
-	
-	      Color color = new Color( Color.HSBtoRGB( (float)temp_hue, 
-	                                           (float)temp_sat, 
-	                                           (float)temp_light ) );
-	
-		  final_red_lookup  [i] = ( int )( color.getRed() );
-		  final_green_lookup[i] = ( int )( color.getGreen() );
-		  final_blue_lookup [i] = ( int )( color.getBlue() );
-	   }
-	}
-	
-	public void doColorize( BufferedImage image ) {
-		InfiniTiC.LOGGER.info(image);
-		int height = image.getHeight();
-	   	int width;
-	   	
-	   	while( height-- != 0 ) {
-		   	width = image.getWidth();
-		   	
-		  	while( width-- != 0 ) {
-			   	Color color = new Color( image.getRGB( width, height ) );
+	public BufferedImage filter(BufferedImage src) {
+		BufferedImage out = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		
-			   	int lum = lum_red_lookup  [color.getRed  ()] +
-		               	 lum_green_lookup[color.getGreen()] +
-		                 lum_blue_lookup [color.getBlue ()];
+		int[] rgbArray = new int[src.getWidth() * src.getHeight()];
+		rgbArray = src.getRGB(0, 0, src.getWidth(), src.getHeight(), rgbArray, 0, src.getWidth());
 		
-			   	if( lightness > 0 ) {
-			   		lum = (int)((double)lum * (100f - lightness) / 100f);
-			        lum += 255f - (100f - lightness) * 255f / 100f;
-			    }
-			    else if( lightness < 0 ) {
-			        lum = (int)(((double)lum * lightness + 100f) / 100f);
-			    }
-			
-			    Color final_color = new Color( final_red_lookup[lum],
-			                                   final_green_lookup[lum],
-			                                   final_blue_lookup[lum],
-			                                   color.getAlpha() );
-			
-			    image.setRGB( width, height, final_color.getRGB() );
+		for (int i=0, q=rgbArray.length; i<q; i++) {
+			rgbArray[i] = colorizePixel(rgbArray[i]);
+			//int[] x = getRGB(rgbArray[i]);
+			//InfiniTiC.LOGGER.info(x[0] + " " + x[1] + " " + x[2]);
+		}
 		
-		  	}
-	
-	
-	   	}
+		for (int clr: rgbArray) {
+			int[] x = getRGB(clr);
+			InfiniTiC.LOGGER.info(x[0] + " " + x[1] + " " + x[2]);
+		}
+		
+		out.setRGB(0, 0, src.getWidth(), src.getHeight(), rgbArray, 0, src.getWidth());
+		return out;
 	}
+	
+	private static int[] getRGB(int rgb) {
+		int[] ret = new int[3];
+		ret[0] = rgb >> 16 & 0xff;
+		ret[1] = rgb >> 8  & 0xff;
+		ret[2] = rgb       & 0xff;
+		return ret;
+	}
+
+	private int colorizePixel(int rgb) {
+		int r = rgb >> 16 & 0xff;
+		int g = rgb >> 8  & 0xff;
+		int b = rgb       & 0xff;
+		
+		r = (int) ((redColor + (r * 0.3)) / 2);
+		g = (int) ((greenColor + (g * 0.59)) / 2);
+		b = (int) ((blueColor + (b * 0.11)) / 2);
+		
+		return (rgb & 0xFF000000) | (r << 16) | (g << 8) | b;
+	}
+	
 }

@@ -25,7 +25,7 @@ public class CustomTexture extends TextureAtlasSprite {
 		
 		for (int i=0; i < image.length; i++) {
 			if (image[i] != null) {
-				colrz.doColorize(image[i]);
+				image[i] = colrz.filter(image[i]);
 			}
 		}
 		
