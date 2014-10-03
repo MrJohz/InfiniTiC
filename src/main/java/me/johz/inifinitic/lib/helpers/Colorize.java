@@ -3,8 +3,6 @@ package me.johz.inifinitic.lib.helpers;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 
-import me.johz.inifinitic.InfiniTiC;
-
 public class Colorize {
 	
 	BufferedImageOp filter;
@@ -26,19 +24,13 @@ public class Colorize {
 		
 		for (int i=0, q=rgbArray.length; i<q; i++) {
 			rgbArray[i] = colorizePixel(rgbArray[i]);
-			//int[] x = getRGB(rgbArray[i]);
-			//InfiniTiC.LOGGER.info(x[0] + " " + x[1] + " " + x[2]);
-		}
-		
-		for (int clr: rgbArray) {
-			int[] x = getRGB(clr);
-			InfiniTiC.LOGGER.info(x[0] + " " + x[1] + " " + x[2]);
 		}
 		
 		out.setRGB(0, 0, src.getWidth(), src.getHeight(), rgbArray, 0, src.getWidth());
 		return out;
 	}
 	
+	@SuppressWarnings("unused")
 	private static int[] getRGB(int rgb) {
 		int[] ret = new int[3];
 		ret[0] = rgb >> 16 & 0xff;

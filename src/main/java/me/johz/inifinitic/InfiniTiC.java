@@ -1,11 +1,17 @@
 package me.johz.inifinitic;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import me.johz.inifinitic.lib.data.MaterialData;
 import me.johz.inifinitic.lib.data.MaterialJSON;
+import me.johz.inifinitic.lib.helpers.GenericHelper;
 import me.johz.inifinitic.lib.helpers.JsonConfigHelper;
 
 import org.apache.logging.log4j.Logger;
@@ -21,7 +27,6 @@ public class InfiniTiC {
 	/**
 	 * THE BIG LONG LIST OF THINGS TO DO:
 	 * 
-	 * TODO: JSON validation.  Anything would be better than currently.
 	 * TODO: Auto-select material ids from range
 	 * TODO: Buckets
 	 * TODO: Get TiC to understand how much liquid is in the smeltery
@@ -78,6 +83,10 @@ public class InfiniTiC {
     			for (MaterialData md: makeMaterials(file)) {
     				ds.add(md);
     			}
+    		} else if (GenericHelper.isZipFile(file)) {
+    			for (MaterialData md: makeMaterialsZipped(file)) {
+    				ds.add(md);
+    			}
     		}
     		
     		MaterialJSON m = JsonConfigHelper.dataFromJSON(file);
@@ -89,5 +98,48 @@ public class InfiniTiC {
     	}
     	
 		return ds.toArray(new MaterialData[ds.size()]);
+    }
+    
+    @SuppressWarnings("resource")
+	private MaterialData[] makeMaterialsZipped(File zipDir) {
+    	List<MaterialData> ds = new ArrayList<MaterialData>();
+    	
+    	ZipFile dir;
+		try {
+			dir = new ZipFile(zipDir);
+		} catch (ZipException e) {
+			return new MaterialData[0];
+		} catch (IOException e) {
+			return new MaterialData[0];
+		}
+		
+    	Enumeration<? extends ZipEntry> entries = dir.entries();
+    	while (entries.hasMoreElements()) {
+    		ZipEntry zfile = entries.nextElement();
+    		MaterialJSON m;
+			try {
+				m = JsonConfigHelper.dataFromStream(dir.getInputStream(zfile));
+			} catch (IOException e) {
+				try { dir.close(); } catch (IOException e2) { return new MaterialData[0]; }
+				return new MaterialData[0];
+			}
+    		if (m != null) {
+    			
+    			ds.add(new MaterialData(m, zipDir.getAbsolutePath()));
+    		} else {
+    			LOGGER.warn("Could not read or parse file '" + zipDir.getName() + "'");
+    		}
+    	}
+    	
+    	try {
+			dir.close();
+		} catch (IOException e) {
+			return new MaterialData[0];
+		}
+    	
+    	if (ds.size() == 0) {
+    		LOGGER.warn("Exploration of zipfile '" + zipDir.getAbsolutePath() + "' yielded no config files.  Is this really right?");
+    	}
+    	return ds.toArray(new MaterialData[ds.size()]);
     }
 }
