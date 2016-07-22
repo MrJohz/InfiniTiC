@@ -5,6 +5,7 @@ import java.util.HashMap;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
+import me.johz.infinitic.items.InfiniBucket;
 import me.johz.inifinitic.InfiniTiC;
 import me.johz.inifinitic.blocks.BlockInfiniFluid;
 import me.johz.inifinitic.lib.errors.JSONValidationException;
@@ -12,9 +13,11 @@ import me.johz.inifinitic.lib.helpers.GenericHelper;
 import me.johz.inifinitic.lib.helpers.NameConversionHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import tconstruct.library.TConstructRegistry;
@@ -35,10 +38,12 @@ public class MaterialData {
 	public MaterialJSON json;
 	public Fluid fluid;
 	public Block fluidBlock;
+	public InfiniBucket fluidBucket;
+	public int meltingValue;
 	
 	public MaterialData(MaterialJSON json, String filename) {
 		this.json = json;
-		
+
 		try {
 			json.validate();
 		} catch (JSONValidationException e) {
@@ -69,6 +74,14 @@ public class MaterialData {
 
 	private void setRecipes() {
 		
+		if (json.toolData.temperature > 0) {
+			meltingValue = json.toolData.temperature;
+		}
+		else
+		{
+			meltingValue = defaultMeltingValue;
+		}
+	 	
 		FluidStack ingotFluid = new FluidStack(fluid, ingotLiquidValue);
 		FluidStack oreFluid = new FluidStack(fluid, oreLiquidValue);
 		FluidStack blockFluid = new FluidStack(fluid, blockLiquidValue);
@@ -77,21 +90,22 @@ public class MaterialData {
 		// Melting recipes
 		
 		Block renderBlock = NameConversionHelper.getBlock(json.renderblock); 
+		Block renderOre = NameConversionHelper.getBlock(json.renderore); 
 		
 		for (ItemStack itm: json.getBlocks()) {
-			Smeltery.addMelting(itm, renderBlock, json.renderblockMeta, defaultMeltingValue, blockFluid);
+			Smeltery.addMelting(itm, renderBlock, json.renderblockMeta, meltingValue * 5, blockFluid);
 		}
 		
 		for (ItemStack itm: json.getOres()) {
-			Smeltery.addMelting(itm, renderBlock, json.renderblockMeta, defaultMeltingValue, oreFluid);
+			Smeltery.addMelting(itm, renderOre, json.renderoreMeta, meltingValue, oreFluid);
 		}
 		
 		for (ItemStack itm: json.getIngots()) {
-			Smeltery.addMelting(itm, renderBlock, json.renderblockMeta, defaultMeltingValue, ingotFluid);
+			Smeltery.addMelting(itm, renderBlock, json.renderblockMeta, meltingValue, ingotFluid);
 		}
 		
 		for (ItemStack itm: json.getDusts()) {
-			Smeltery.addMelting(itm, renderBlock, json.renderblockMeta, defaultMeltingValue, ingotFluid);
+			Smeltery.addMelting(itm, renderBlock, json.renderblockMeta, meltingValue, ingotFluid);
 		}
 		
 		
@@ -136,6 +150,18 @@ public class MaterialData {
 		} else if (json.toolData.stonebound < 0) {
 			tag.setFloat("Jagged", json.toolData.stonebound);
 		}
+		if (json.toolData.drawspeed > 0) {
+			tag.setInteger("Bow_DrawSpeed", json.toolData.drawspeed); 
+		}
+		if (json.toolData.projectilespeed > 0) {
+			tag.setFloat("Bow_ProjectileSpeed", json.toolData.projectilespeed); 
+		}
+		if (json.toolData.projectilemass > 0) {
+			tag.setFloat("Projectile_Mass", json.toolData.projectilemass); 
+		}
+		if (json.toolData.projectilefragility > 0) {
+			tag.setFloat("Projectile_Fragility", json.toolData.projectilefragility); 
+		}
 		
 		FMLInterModComms.sendMessage("TConstruct", "addMaterial", tag);
 		
@@ -172,5 +198,10 @@ public class MaterialData {
 		}
 		
 		FluidType.registerFluidType(name, fluidBlock, 0, 300, fluid, true);
+				
+		//Attempt at Bucket Implementation
+		fluidBucket = new InfiniBucket(fluidBlock, name, json.toolData.getColorType());		
+		GameRegistry.registerItem(fluidBucket, "bucket_" + name);
+		FluidContainerRegistry.registerFluidContainer(fluid, new ItemStack(fluidBucket), new ItemStack(Items.bucket));
 	}
 }

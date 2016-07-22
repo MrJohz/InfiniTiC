@@ -13,6 +13,7 @@ import me.johz.inifinitic.lib.data.MaterialData;
 import me.johz.inifinitic.lib.data.MaterialJSON;
 import me.johz.inifinitic.lib.helpers.GenericHelper;
 import me.johz.inifinitic.lib.helpers.JsonConfigHelper;
+import net.minecraftforge.common.MinecraftForge;
 
 import org.apache.logging.log4j.Logger;
 
@@ -28,14 +29,13 @@ public class InfiniTiC {
 	 * THE BIG LONG LIST OF THINGS TO DO:
 	 * 
 	 * TODO: Auto-select material ids from range
-	 * TODO: Buckets
 	 * TODO: Get TiC to understand how much liquid is in the smeltery
 	 */
 	
 	
 	public static final String NAME = "Infini-TiC";
     public static final String MODID = "infinitic";
-    public static final String VERSION = "1.7.10-0.0.1";
+    public static final String VERSION = "1.7.10-0.1.1";
     
     public static Logger LOGGER;
     public static File CONFIGDIR;
@@ -54,6 +54,14 @@ public class InfiniTiC {
     	
     	// Read configs
     	MATERIALS = makeMaterials(CONFIGDIR);
+
+    	//try making the materials in preInit... it still works!
+    	for (MaterialData mat: MATERIALS) {
+    		mat.init();
+    	}
+
+    	//Event Handler... to handle all our events!
+    	MinecraftForge.EVENT_BUS.register(new InfiniEvents());
     }
     
     @Mod.EventHandler
@@ -62,9 +70,6 @@ public class InfiniTiC {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent e) {
     	
-    	for (MaterialData mat: MATERIALS) {
-    		mat.init();
-    	}
     	
     }
     
@@ -100,7 +105,6 @@ public class InfiniTiC {
 		return ds.toArray(new MaterialData[ds.size()]);
     }
     
-    @SuppressWarnings("resource")
 	private MaterialData[] makeMaterialsZipped(File zipDir) {
     	List<MaterialData> ds = new ArrayList<MaterialData>();
     	

@@ -20,6 +20,8 @@ public class MaterialJSON implements IJson {
 	
 	public ToolDataJSON toolData;
 	
+	public String renderore;
+	public int renderoreMeta = 0;
 	public String renderblock;
 	public int renderblockMeta = 0;
 	
@@ -61,7 +63,7 @@ public class MaterialJSON implements IJson {
 				items.removeAll(NameConversionHelper.getAllItems(itemName));
 			}
 		}
-		
+				
 		return items.toArray(new ItemStack[items.size()]);
 	}
 

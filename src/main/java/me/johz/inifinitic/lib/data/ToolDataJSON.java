@@ -23,6 +23,14 @@ public class ToolDataJSON implements IJson {
 	// TODO: Fix this to allow four-part hex and other formats
 	String color;
 	
+	int temperature;
+	
+	//Bow things
+	int drawspeed;
+	float projectilespeed;
+	float projectilemass;
+	float projectilefragility;
+	
 	public int getColor(boolean withAlpha) {
 		Color col = getColorType();
 		if (withAlpha) {
