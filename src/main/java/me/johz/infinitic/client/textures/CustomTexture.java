@@ -1,4 +1,4 @@
-package me.johz.inifinitic.client.textures;
+package me.johz.infinitic.client.textures;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -7,8 +7,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import me.johz.inifinitic.InfiniTiC;
-import me.johz.inifinitic.lib.helpers.Colorize;
+import me.johz.infinitic.InfiniTiC;
+import me.johz.infinitic.lib.helpers.Colorize;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.data.AnimationMetadataSection;

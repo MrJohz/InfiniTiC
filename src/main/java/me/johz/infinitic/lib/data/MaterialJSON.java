@@ -1,11 +1,11 @@
-package me.johz.inifinitic.lib.data;
+package me.johz.infinitic.lib.data;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import me.johz.inifinitic.lib.errors.JSONValidationException;
-import me.johz.inifinitic.lib.helpers.GenericHelper;
-import me.johz.inifinitic.lib.helpers.NameConversionHelper;
+import me.johz.infinitic.lib.errors.JSONValidationException;
+import me.johz.infinitic.lib.helpers.GenericHelper;
+import me.johz.infinitic.lib.helpers.NameConversionHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 

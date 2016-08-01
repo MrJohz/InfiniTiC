@@ -1,4 +1,4 @@
-package me.johz.inifinitic.lib.helpers;
+package me.johz.infinitic.lib.helpers;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package me.johz.inifinitic;
+package me.johz.infinitic;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,10 +9,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import me.johz.inifinitic.lib.data.MaterialData;
-import me.johz.inifinitic.lib.data.MaterialJSON;
-import me.johz.inifinitic.lib.helpers.GenericHelper;
-import me.johz.inifinitic.lib.helpers.JsonConfigHelper;
 import net.minecraftforge.common.MinecraftForge;
 
 import org.apache.logging.log4j.Logger;
@@ -21,6 +17,10 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import me.johz.infinitic.lib.data.MaterialData;
+import me.johz.infinitic.lib.data.MaterialJSON;
+import me.johz.infinitic.lib.helpers.GenericHelper;
+import me.johz.infinitic.lib.helpers.JsonConfigHelper;
 
 @Mod(modid=InfiniTiC.MODID, version=InfiniTiC.VERSION, name=InfiniTiC.NAME)
 public class InfiniTiC {

@@ -1,11 +1,11 @@
-package me.johz.inifinitic.blocks;
+package me.johz.infinitic.blocks;
 
 import java.awt.Color;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import me.johz.inifinitic.InfiniTiC;
-import me.johz.inifinitic.client.textures.CustomTexture;
+import me.johz.infinitic.InfiniTiC;
+import me.johz.infinitic.client.textures.CustomTexture;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;

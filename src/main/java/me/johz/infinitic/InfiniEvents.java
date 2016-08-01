@@ -1,4 +1,4 @@
-package me.johz.inifinitic;
+package me.johz.infinitic;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.eventhandler.Event.Result;

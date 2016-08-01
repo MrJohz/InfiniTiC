@@ -1,9 +1,9 @@
-package me.johz.inifinitic.lib.data;
+package me.johz.infinitic.lib.data;
 
 import java.awt.Color;
 
+import me.johz.infinitic.lib.errors.JSONValidationException;
 import tconstruct.library.TConstructRegistry;
-import me.johz.inifinitic.lib.errors.JSONValidationException;
 
 public class ToolDataJSON implements IJson {
 	

@@ -1,16 +1,16 @@
-package me.johz.inifinitic.lib.data;
+package me.johz.infinitic.lib.data;
 
 import java.util.HashMap;
 
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
+import me.johz.infinitic.InfiniTiC;
+import me.johz.infinitic.blocks.BlockInfiniFluid;
 import me.johz.infinitic.items.InfiniBucket;
-import me.johz.inifinitic.InfiniTiC;
-import me.johz.inifinitic.blocks.BlockInfiniFluid;
-import me.johz.inifinitic.lib.errors.JSONValidationException;
-import me.johz.inifinitic.lib.helpers.GenericHelper;
-import me.johz.inifinitic.lib.helpers.NameConversionHelper;
+import me.johz.infinitic.lib.errors.JSONValidationException;
+import me.johz.infinitic.lib.helpers.GenericHelper;
+import me.johz.infinitic.lib.helpers.NameConversionHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Items;

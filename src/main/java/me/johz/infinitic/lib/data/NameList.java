@@ -1,11 +1,11 @@
-package me.johz.inifinitic.lib.data;
+package me.johz.infinitic.lib.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import me.johz.inifinitic.lib.errors.JSONValidationException;
-import me.johz.inifinitic.lib.helpers.GenericHelper;
+import me.johz.infinitic.lib.errors.JSONValidationException;
+import me.johz.infinitic.lib.helpers.GenericHelper;
 
 public class NameList implements IJson {
 	
