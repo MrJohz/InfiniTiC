@@ -35,7 +35,7 @@ public class InfiniTiC {
 	
 	public static final String NAME = "Infini-TiC";
     public static final String MODID = "infinitic";
-    public static final String VERSION = "1.7.10-0.1.1";
+    public static final String VERSION = "1.7.10-0.1.2";
     
     public static Logger LOGGER;
     public static File CONFIGDIR;
@@ -44,7 +44,6 @@ public class InfiniTiC {
     
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent e) {
-    	// Set dat shizzle up, yo
     	LOGGER = e.getModLog();
     	CONFIGDIR = new File(e.getModConfigurationDirectory(), InfiniTiC.MODID);
 

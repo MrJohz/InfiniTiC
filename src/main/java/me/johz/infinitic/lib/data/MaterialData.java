@@ -14,6 +14,7 @@ import me.johz.infinitic.lib.helpers.NameConversionHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.Fluid;
@@ -37,6 +38,19 @@ public class MaterialData {
 	
 	public MaterialJSON json;
 	public Fluid fluid;
+	public Block ore;
+	public Item dustSmall;
+	public Item dust;
+	public Item nugget;
+	public ItemStack ingot;
+	public ItemStack solidBlock;
+	public Item chunk;
+	public Item gem;
+	
+	FluidStack ingotFluid;
+	FluidStack oreFluid;
+	FluidStack blockFluid;
+	
 	public Block fluidBlock;
 	public InfiniBucket fluidBucket;
 	public int meltingValue;
@@ -47,32 +61,49 @@ public class MaterialData {
 		try {
 			json.validate();
 		} catch (JSONValidationException e) {
-			InfiniTiC.LOGGER.error("InfiniTiC Is About To Break!");
 			InfiniTiC.LOGGER.error("Invalid JSON detected, filename = " + filename);
 			InfiniTiC.LOGGER.error("Logged error was: " + e.getReason());
 		}
 	}
 	
 	public void init() {
-		setFluid(json.name);
-		setLocalize(json.name);
-		setMaterial();
-		setRecipes();
+		getSolids();
+		makeFluid();
+		makeBucket();
+		addLocalization();
+		addMaterial();
+		saveRecipes();
 	}
 	
-	private void setLocalize(String name) {
+	private void addLocalization() {
 		for (String[] local: json.localizations) {
 			if (local.length != 2) continue;
 			
 			HashMap<String, String> map = new HashMap<String, String>();
-			map.put("fluid.tile." + name, local[1]);
-			map.put("tile." + name + ".name", local[1]);
-			map.put("material." + name, local[1]);
+			map.put("fluid.tile." + json.name, local[1]);
+			map.put("tile." + json.name + ".name", local[1]);
+			map.put("material." + json.name, local[1]);
 			LanguageRegistry.instance().injectLanguage(local[0], map);
 		}
 	}
+	
+	private void getSolids()
+	{
+		//Get the ore block
+		
+		//If no ore block exists, make one
+		
+		//Get the solid block
+		solidBlock = GenericHelper.safeFirst(json.getBlocks());		
+		//If no solid block exists, make one
 
-	private void setRecipes() {
+		//Get the ingot
+		ingot = GenericHelper.safeFirst(json.getIngots());
+		//if no ingot exists, make one
+
+	}
+
+	private void saveRecipes() {
 		
 		if (json.toolData.temperature > 0) {
 			meltingValue = json.toolData.temperature;
@@ -80,12 +111,7 @@ public class MaterialData {
 		else
 		{
 			meltingValue = defaultMeltingValue;
-		}
-	 	
-		FluidStack ingotFluid = new FluidStack(fluid, ingotLiquidValue);
-		FluidStack oreFluid = new FluidStack(fluid, oreLiquidValue);
-		FluidStack blockFluid = new FluidStack(fluid, blockLiquidValue);
-		
+		}		
 		
 		// Melting recipes
 		
@@ -108,26 +134,22 @@ public class MaterialData {
 			Smeltery.addMelting(itm, renderBlock, json.renderblockMeta, meltingValue, ingotFluid);
 		}
 		
-		
-		// Unsmelting recipes
-		
-		ItemStack blockItm = GenericHelper.safeFirst(json.getBlocks());
-		if (blockItm != null) {
-			TConstructRegistry.getBasinCasting().addCastingRecipe(blockItm, blockFluid, 100);
+		// Unsmelting recipes		
+		if (solidBlock != null) {
+			TConstructRegistry.getBasinCasting().addCastingRecipe(solidBlock, blockFluid, 100);
 		}
-		
-		ItemStack ingotItm = GenericHelper.safeFirst(json.getIngots());
-		ItemStack ingotPattern = TConstructRegistry.getItemStack("ingotCast");
-		if (ingotItm != null) {
-			TConstructRegistry.getTableCasting().addCastingRecipe(ingotItm, ingotFluid, ingotPattern, 50);
+		if (ingot != null) {
+			ItemStack ingotPattern = TConstructRegistry.getItemStack("ingotCast");
+			TConstructRegistry.getTableCasting().addCastingRecipe(ingot, ingotFluid, ingotPattern, 50);
 		}
 	}
 	
-	private void setMaterial() {
+	private void addMaterial() {
 		
 		// TODO: Work out how to check if there's a material pre-registered
 		
 		NBTTagCompound tag = new NBTTagCompound();
+		NBTTagCompound item;
 		tag.setInteger("Id", json.toolData.ID);
 		tag.setString("Name", json.name);
 		tag.setInteger("Durability", json.toolData.durability);
@@ -164,16 +186,45 @@ public class MaterialData {
 		}
 		
 		FMLInterModComms.sendMessage("TConstruct", "addMaterial", tag);
-		
+
+		//Add the ingot as a repair material
+		tag = new NBTTagCompound();
+		tag.setInteger("MaterialId", json.toolData.ID);
+		tag.setInteger("Value", 2); //2 halves
+		item = new NBTTagCompound();
+		ItemStack ingotItm = GenericHelper.safeFirst(json.getIngots());
+		ingotItm.writeToNBT(item);
+		tag.setTag("Item", item);
+		FMLInterModComms.sendMessage("TConstruct", "addMaterialItem", tag);
+
+		//Add the fluid as the casting material
 		tag = new NBTTagCompound();
 		(new FluidStack(fluid, 1)).writeToNBT(tag);
 		tag.setInteger("MaterialId", json.toolData.ID);
 		FMLInterModComms.sendMessage("TConstruct", "addPartCastingMaterial", tag);
+
+		/*
+		//add the drop and it's chunk to the part builder
+		tag = new NBTTagCompound();
+		tag.setInteger("MaterialId", json.toolData.ID); // output material id
+		item = new NBTTagCompound();
+		(new ItemStack(TinkerSmeltery.smeltery, 1, 2)).writeToNBT(item); // seared brick block
+		tag.setTag("Item", item);
+
+		item = new NBTTagCompound();
+		(new ItemStack(TinkerTools.materials, 1, 2)).writeToNBT(item); // seared brick item
+		tag.setTag("Shard", item);
+
+		// 1 value = 1 shard. So 1 blocks like stone usually have value 2.
+		// Seared Brick is the shard, the block consists of 4 bricks, therefore value 4
+		tag.setInteger("Value", 4);
+		FMLInterModComms.sendMessage("TConstruct", "addPartBuilderMaterial", tag);
+		*/
 	}
 	
-	private void setFluid(String name) {
+	private void makeFluid() {
 		
-		fluid = new Fluid(name + ".molten")
+		fluid = new Fluid(json.name + ".molten")
 			.setLuminosity(12)
 			.setDensity(3000)
 			.setViscosity(6000)
@@ -181,12 +232,12 @@ public class MaterialData {
 		
 		boolean isRegistered = !(FluidRegistry.registerFluid(fluid));
 		fluidBlock = new BlockInfiniFluid(fluid, Material.lava, json.toolData.getColorType());
-		fluidBlock.setBlockName(name);
-		GameRegistry.registerBlock(fluidBlock, "fluid.molten." + name);
+		fluidBlock.setBlockName(json.name);
+		GameRegistry.registerBlock(fluidBlock, "fluid.molten." + json.name);
 		fluid.setUnlocalizedName(fluidBlock.getUnlocalizedName());
 		
 		if (isRegistered) {
-			fluid = FluidRegistry.getFluid(name + ".molten");
+			fluid = FluidRegistry.getFluid(json.name + ".molten");
 			Block regFluidBlock = fluid.getBlock();
 			if (regFluidBlock != null) {
 				fluidBlock = regFluidBlock;
@@ -197,11 +248,19 @@ public class MaterialData {
 			fluid.setBlock(fluidBlock);
 		}
 		
-		FluidType.registerFluidType(name, fluidBlock, 0, 300, fluid, true);
-				
+		FluidType.registerFluidType(json.name, fluidBlock, 0, 300, fluid, true);
+		
+		ingotFluid = new FluidStack(fluid, ingotLiquidValue);
+		oreFluid = new FluidStack(fluid, oreLiquidValue);
+		blockFluid = new FluidStack(fluid, blockLiquidValue);
+
+	}
+	
+	private void makeBucket()
+	{				
 		//Attempt at Bucket Implementation
-		fluidBucket = new InfiniBucket(fluidBlock, name, json.toolData.getColorType());		
-		GameRegistry.registerItem(fluidBucket, "bucket_" + name);
+		fluidBucket = new InfiniBucket(fluidBlock, json.name, json.toolData.getColorType());		
+		GameRegistry.registerItem(fluidBucket, "bucket_" + json.name);
 		FluidContainerRegistry.registerFluidContainer(fluid, new ItemStack(fluidBucket), new ItemStack(Items.bucket));
 	}
 }

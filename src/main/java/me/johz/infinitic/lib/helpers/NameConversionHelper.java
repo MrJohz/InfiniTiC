@@ -3,6 +3,11 @@ package me.johz.infinitic.lib.helpers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.logging.log4j.Level;
+
+import cpw.mods.fml.common.FMLLog;
+import me.johz.infinitic.InfiniTiC;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -10,56 +15,100 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class NameConversionHelper {
 	
-	private static class NamedItem {
+	private static class NamedItem 
+	{
 		public String modid;
 		public String itemname;
 		public int metadata;
 		public boolean isOreDict;
 		
-		NamedItem(String name) {
-			if (validate(name)) {
+		NamedItem(String name) 
+		{
+			if (validate(name)) 
+			{
 				parse(name);
+				InfiniTiC.LOGGER.log(Level.INFO, InfiniTiC.MODID + ": Parsed an item: " + modid + ":" + itemname + ":" 
+						+ (metadata == OreDictionary.WILDCARD_VALUE ? "*" : metadata));
 			}
 		}
 
-		private void parse(String name) {
+		private void parse(String name) 
+		{
 			String[] pieces = name.split(":");
 			
-			if (pieces[0] == "ore") {
-				// Assume that no mod would be so pretentious
-				// as to have "ore" as it's modid
+			if (pieces.length == 1) 
+			{
+				modid = "minecraft";
+				itemname = pieces[0];
+				metadata = 0;
+				return;
+			}
+			
+			if (pieces[0] == "ore") 
+			{
 				isOreDict = true;
 			}
 			
-			if (pieces.length == 3) {
-				// Metadata is included
-				if (pieces[2] == "*") {
+			if (pieces.length == 2) 
+			{   
+				if (NumberUtils.isNumber(pieces[1])) 
+				{   //e.g. "stone:2"
+					modid = "minecraft";
+					itemname = pieces[0];
+					metadata = Integer.parseInt(pieces[1]);
+					return;
+				}
+				else if (pieces[1] == "*")
+				{   //e.g. "stone:*"
+					modid = "minecraft";
+					itemname = pieces[0];
 					metadata = OreDictionary.WILDCARD_VALUE;
-				} else {
-					// This is safe because it's tested in
-					// validation, right?
-					metadata = Integer.parseInt(pieces[2]);
+					return;				
+				}
+				else
+				{   //e.g. "mod:block"
+					modid = pieces[0];
+					itemname = pieces[1];
+					metadata = 0;
+					return;
 				}
 			}
 			
-			modid = pieces[0];
+			//here length must be greater than 2
+			//e.g.  minecraft:stone:2
+			//or    minecraft:stone:*
+			//or    lotr:tile.lotr:oreStorage     !
+			//or    lotr:tile.lotr:oreStorage:*   !!
+			//or    lotr:tile.lotr:oreStorage:8   !!!
+			
+			int piecesLeft = pieces.length - 1;
+			if (pieces[piecesLeft] == "*") 
+			{
+				metadata = OreDictionary.WILDCARD_VALUE;
+				piecesLeft--;
+			} 
+			else if (NumberUtils.isNumber(pieces[piecesLeft])) 
+			{
+				metadata = Integer.parseInt(pieces[piecesLeft]);
+				piecesLeft--;
+			}
+			
+			modid = pieces[0];			
 			itemname = pieces[1];
+			for (int i = 2; i < piecesLeft; i++)
+			{
+				itemname += ":" + pieces[i];
+			}
+
 		}
 	}
 	
 	private static boolean validate(String name) {
-		String[] pieces = name.split(":");
-		
-		if (pieces.length != 2 && pieces.length != 3) {
+		if (name == null || name.length() == 0)
+		{
+			FMLLog.getLogger().log(Level.ERROR, "Name has not been specified");
 			return false;
-		}
-		
-		if (pieces.length == 3) {
-			if (!GenericHelper.isInteger(name) && !(name == "*")) {
-				return false;
-			}
-		}
-		
+		}				
 		return true;
 	}
 	
