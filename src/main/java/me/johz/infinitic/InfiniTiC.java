@@ -22,7 +22,7 @@ import me.johz.infinitic.lib.data.MaterialJSON;
 import me.johz.infinitic.lib.helpers.GenericHelper;
 import me.johz.infinitic.lib.helpers.JsonConfigHelper;
 
-@Mod(modid=InfiniTiC.MODID, version=InfiniTiC.VERSION, name=InfiniTiC.NAME)
+@Mod(modid=InfiniTiC.MODID, version=InfiniTiC.VERSION, name=InfiniTiC.NAME) 
 public class InfiniTiC {
 	
 	/**
@@ -31,7 +31,6 @@ public class InfiniTiC {
 	 * TODO: Auto-select material ids from range
 	 * TODO: Get TiC to understand how much liquid is in the smeltery
 	 */
-	
 	
 	public static final String NAME = "Infini-TiC";
     public static final String MODID = "infinitic";

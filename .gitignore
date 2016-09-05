@@ -37,3 +37,7 @@ options.txt
 /saves/
 /out
 /runServer
+/asm/
+/crash-reports/
+
+usernamecache.json
