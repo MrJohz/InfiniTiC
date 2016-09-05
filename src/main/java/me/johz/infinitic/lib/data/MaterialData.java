@@ -188,14 +188,17 @@ public class MaterialData {
 		FMLInterModComms.sendMessage("TConstruct", "addMaterial", tag);
 
 		//Add the ingot as a repair material
-		tag = new NBTTagCompound();
-		tag.setInteger("MaterialId", json.toolData.ID);
-		tag.setInteger("Value", 2); //2 halves
-		item = new NBTTagCompound();
 		ItemStack ingotItm = GenericHelper.safeFirst(json.getIngots());
-		ingotItm.writeToNBT(item);
-		tag.setTag("Item", item);
-		FMLInterModComms.sendMessage("TConstruct", "addMaterialItem", tag);
+		if (ingotItm != null)
+		{
+			tag = new NBTTagCompound();
+			tag.setInteger("MaterialId", json.toolData.ID);
+			tag.setInteger("Value", 2); //2 halves
+			item = new NBTTagCompound();
+			ingotItm.writeToNBT(item);
+			tag.setTag("Item", item);
+			FMLInterModComms.sendMessage("TConstruct", "addMaterialItem", tag);		
+		}
 
 		//Add the fluid as the casting material
 		tag = new NBTTagCompound();

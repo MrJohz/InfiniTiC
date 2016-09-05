@@ -27,7 +27,7 @@ public class NameConversionHelper {
 			if (validate(name)) 
 			{
 				parse(name);
-				InfiniTiC.LOGGER.log(Level.INFO, InfiniTiC.MODID + ": Parsed an item: " + modid + ":" + itemname + ":" 
+				InfiniTiC.LOGGER.log(Level.INFO, InfiniTiC.MODID + ": Parsed an item [" + name + "]: " + modid + ":" + itemname + ":" 
 						+ (metadata == OreDictionary.WILDCARD_VALUE ? "*" : metadata));
 			}
 		}
@@ -95,7 +95,7 @@ public class NameConversionHelper {
 			
 			modid = pieces[0];			
 			itemname = pieces[1];
-			for (int i = 2; i < piecesLeft; i++)
+			for (int i = 2; i <= piecesLeft; i++)
 			{
 				itemname += ":" + pieces[i];
 			}
@@ -157,7 +157,13 @@ public class NameConversionHelper {
 			return OreDictionary.getOres(item.itemname);
 		} else {
 			List<ItemStack> l = new ArrayList<ItemStack>();
-			l.add(getItem(name));
+			ItemStack i = getItem(name);
+			if (i.getItem() == null)
+			{
+				FMLLog.getLogger().log(Level.WARN, InfiniTiC.MODID + ": Unable to find a material named " + item.itemname);
+			}
+			else
+				l.add(i);
 			return l;
 		}
 	}

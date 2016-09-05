@@ -1,22 +1,13 @@
-/*
- * Tinkers Construct
- * Master build file
- * 
- * Authors: Sunstrike, ProgWML6
- * Help from AbrarSyed
- */
-
 buildscript {
     repositories {
         mavenCentral()
-		mavenLocal()
         maven {
-            name = 'ForgeFS'
+            name = 'forge'
             url = 'http://files.minecraftforge.net/maven'
         }
         maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+            name = 'sonatype'
+            url = 'https://oss.sonatype.org/content/repositories/snapshots/'
         }
     }
     dependencies {
@@ -24,28 +15,21 @@ buildscript {
     }
 }
 
+apply plugin: 'forge'
+
 repositories {
     maven {
-        name "CB Maven FS"
-        url "http://chickenbones.net/maven/"
-    }
-    maven {
-        name "ProfMobius Maven FS"
-        url "http://mobiusstrip.eu/maven"
-    }
-    maven {
-        name "DVS1 Maven FS'"
+        name 'DVS1 Maven FS'
         url 'http://dvs1.progwml6.com/files/maven'
     }
     maven {
-        name "ForgeFS"
-        url 'http://files.minecraftforge.net/maven'
+        name 'CB Maven FS'
+        url 'http://chickenbones.net/maven/'
     }
 }
 
-// Load ForgeGradle
-apply plugin: 'forge'
-group = "boni"
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 // Define properties file
 ext.configFile = file "build.properties"
@@ -76,9 +60,6 @@ if (configFile2.exists()){
 dependencies {
     compile "mantle:Mantle:${config.minecraft_version}-${config.mantle_version}:deobf"
     compile "tconstruct:TConstruct:${config.minecraft_version}-${config.tconstruct_version}:deobf"
-    compile "codechicken:ForgeMultipart:${config.minecraft_version}-${config.FMP_version}:dev"
-    //compile name: 'CodeChickenLib', version: "${config.minecraft_version}-${config.CCLIB_version}", ext: 'jar'
-    //compile name: 'NotEnoughItems', version: "${config.NEI_version}", type: 'jar'
 }
 
 // Finds and sets version data
@@ -117,15 +98,6 @@ minecraft {
     replace '${version}', project.version
 }
 
-
-sourceSets {
-    main {
-        resources {
-            srcDir 'resources'
-        }
-		
-    }
-}
 processResources
 {
     // this will ensure that this task is redone when the versions change.
@@ -156,28 +128,3 @@ artifacts {
     archives deobfJar
 }
 
-task("uploadJars", dependsOn:"signJar") {
-
-    description = "uploads JARs"
-
-    if (project.hasProperty("local_maven") || project.hasProperty("sftp_maven")) {
-        apply plugin: 'maven'
-        uploadArchives {
-            repositories {
-                if(project.hasProperty("local_maven"))
-                {
-                    mavenDeployer {
-                        repository(url: "file://${local_maven}")
-                    }
-                }
-                if(project.hasProperty("sftp_maven")) {
-                    repositories.mavenDeployer {
-                        configuration = configurations.deployerJars
-                        repository(url: "sftp://${sftp_maven}"){
-                            authentication(userName: "${sftp_username}",privateKey: "${sftp_key}")}
-                    }
-                }
-            }
-        }
-    }
-}
