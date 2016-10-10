@@ -15,6 +15,10 @@ buildscript {
     }
 }
 
+plugins {
+	id 'com.matthewprenger.cursegradle' version '1.0.8'
+}
+
 apply plugin: 'forge'
 
 repositories {
@@ -30,6 +34,12 @@ repositories {
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
+    
+def mc_version = '1.7.10'
+def mod_version = '0.1.4'
+version = "${mc_version}-${mod_version}"
+group = 'infinitic'
+archivesBaseName = 'Infini-TiC'
 
 // Define properties file
 ext.configFile = file "build.properties"
@@ -58,12 +68,12 @@ if (configFile2.exists()){
 }
 
 dependencies {
+    compile "codechicken:CodeChickenLib:${config.minecraft_version}-${config.CCLIB_version}:dev"
+    compile "codechicken:CodeChickenCore:${config.minecraft_version}-${config.CCC_version}:dev"
+    compile "codechicken:ForgeMultipart:${config.minecraft_version}-${config.FMP_version}:dev"
+    compile "codechicken:NotEnoughItems:${config.minecraft_version}-${config.NEI_version}:dev"
     compile "mantle:Mantle:${config.minecraft_version}-${config.mantle_version}:deobf"
     compile "tconstruct:TConstruct:${config.minecraft_version}-${config.tconstruct_version}:deobf"
-    compile "codechicken:ForgeMultipart:${config.minecraft_version}-${config.FMP_version}:dev"
-    compile "codechicken:CodeChickenCore:${config.minecraft_version}-${config.CCC_version}:dev"
-    compile "codechicken:CodeChickenLib:${config.minecraft_version}-${config.CCLIB_version}:dev"
-    compile "codechicken:NotEnoughItems:${config.minecraft_version}-${config.NEI_version}:dev"
 }
 
 // Finds and sets version data
@@ -98,7 +108,11 @@ version = "${config.minecraft_version}-${artifact_version}"
 
 minecraft {
     version = config.minecraft_version + "-" + config.forge_version + "-" + config.minecraft_version
-    runDir = 'run'
+    if (file('../run').exists()) {
+	    runDir = '../run/eclipse'
+    } else {
+	    runDir = 'eclipse'
+    }
     replace '${version}', project.version
 }
 
@@ -132,3 +146,17 @@ artifacts {
     archives deobfJar
 }
 
+curseforge {
+	apiKey = project.curseForgeApiKey
+	project {
+		id = '247823'
+		changelog = file('changelog.txt')
+		releaseType = 'release'
+		addGameVersion '1.7.10'
+
+		mainArtifact(jar) {
+			displayName = "InfiniTiC-${mc_version}-${mod_version}"
+		}
+
+	}
+}

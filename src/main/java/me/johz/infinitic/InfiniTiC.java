@@ -22,7 +22,7 @@ import me.johz.infinitic.lib.data.MaterialJSON;
 import me.johz.infinitic.lib.helpers.GenericHelper;
 import me.johz.infinitic.lib.helpers.JsonConfigHelper;
 
-@Mod(modid=InfiniTiC.MODID, version=InfiniTiC.VERSION, name=InfiniTiC.NAME) 
+@Mod(modid=InfiniTiC.MODID, version=InfiniTiC.VERSION, name=InfiniTiC.NAME, acceptedMinecraftVersions="1.7.10") 
 public class InfiniTiC {
 	
 	/**
@@ -34,7 +34,7 @@ public class InfiniTiC {
 	
 	public static final String NAME = "Infini-TiC";
     public static final String MODID = "infinitic";
-    public static final String VERSION = "1.7.10-0.1.3";
+    public static final String VERSION = "1.7.10-0.1.4";
     
     public static Logger LOGGER;
     public static File CONFIGDIR;

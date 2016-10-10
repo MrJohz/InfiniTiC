@@ -55,11 +55,14 @@ public class MaterialData {
 	public InfiniBucket fluidBucket;
 	public int meltingValue;
 	
+	private boolean isValid = false;
+	
 	public MaterialData(MaterialJSON json, String filename) {
 		this.json = json;
 
 		try {
 			json.validate();
+	        isValid = true;
 		} catch (JSONValidationException e) {
 			InfiniTiC.LOGGER.error("Invalid JSON detected, filename = " + filename);
 			InfiniTiC.LOGGER.error("Logged error was: " + e.getReason());
@@ -67,12 +70,15 @@ public class MaterialData {
 	}
 	
 	public void init() {
-		getSolids();
-		makeFluid();
-		makeBucket();
-		addLocalization();
-		addMaterial();
-		saveRecipes();
+	    if (isValid)
+	    {
+	        getSolids();
+	        makeFluid();
+	        makeBucket();
+	        addLocalization();
+	        addMaterial();
+	        saveRecipes();	        
+	    }
 	}
 	
 	private void addLocalization() {
