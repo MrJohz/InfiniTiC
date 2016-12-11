@@ -28,7 +28,7 @@ public class InfiniEvents {
             Block target = evt.world.getBlock(hitX, hitY, hitZ);
             for (int id = 0; id < InfiniTiC.MATERIALS.length; id++)
             {
-                if (target == InfiniTiC.MATERIALS[id].fluidBlock)
+                if (target == InfiniTiC.MATERIALS[id].block)
                 {
                     WorldHelper.setBlockToAir(evt.world, hitX, hitY, hitZ);
                     if (!evt.entityPlayer.capabilities.isCreativeMode)

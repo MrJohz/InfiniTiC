@@ -5,7 +5,7 @@ import java.awt.Color;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import me.johz.infinitic.InfiniTiC;
-import me.johz.infinitic.client.textures.CustomTexture;
+import me.johz.infinitic.client.textures.InfiBucketTexture;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -30,12 +30,12 @@ public class InfiniBucket extends ItemBucket {
     @Override
     @SideOnly(Side.CLIENT)
     public void registerIcons (IIconRegister iconRegister)
-    {
-		TextureAtlasSprite fill = new CustomTexture(_color, InfiniTiC.MODID + ":bucket_fill", true);
-		
-		((TextureMap)iconRegister).setTextureEntry(InfiniTiC.MODID + ":bucket_fill", fill);
-    			
-        this.setTextureName(InfiniTiC.MODID + ":bucket_fill");
+    {		
+		String texture = InfiniTiC.MODID + _name + "_bucket";
+        TextureAtlasSprite bucket = new InfiBucketTexture(_color, texture);
+		((TextureMap)iconRegister).setTextureEntry(texture, bucket);		
+        this.setTextureName(texture);
+        
         super.registerIcons(iconRegister);
     }
 

@@ -1,5 +1,6 @@
 package me.johz.infinitic.lib.data;
 
+import java.awt.Color;
 import java.util.HashMap;
 
 import cpw.mods.fml.common.event.FMLInterModComms;
@@ -51,7 +52,7 @@ public class MaterialData {
 	FluidStack oreFluid;
 	FluidStack blockFluid;
 	
-	public Block fluidBlock;
+	public Block block;
 	public InfiniBucket fluidBucket;
 	public int meltingValue;
 	
@@ -82,17 +83,14 @@ public class MaterialData {
 	}
 	
 	private void addLocalization() {
-		for (String[] local: json.localizations) {
-			if (local.length != 2) continue;
-			
+		for (LocalizationJSON locale: json.localizations) {
 			HashMap<String, String> map = new HashMap<String, String>();
-			map.put("fluid.tile." + json.name, local[1]);
-			map.put("tile." + json.name + ".name", local[1]);
-			map.put("material." + json.name, local[1]);
-			LanguageRegistry.instance().injectLanguage(local[0], map);
+			map.put("tile.fluid.molten." + json.name + ".name", locale.liquid);
+            map.put("item.infinitic.bucket." + json.name + ".name", locale.bucket);
+			LanguageRegistry.instance().injectLanguage(locale.locale, map);
 		}
 	}
-	
+
 	private void getSolids()
 	{
 		//Get the ore block
@@ -229,35 +227,13 @@ public class MaterialData {
 		tag.setInteger("Value", 4);
 		FMLInterModComms.sendMessage("TConstruct", "addPartBuilderMaterial", tag);
 		*/
-	}
+	}	
 	
 	private void makeFluid() {
-		
-		fluid = new Fluid(json.name + ".molten")
-			.setLuminosity(12)
-			.setDensity(3000)
-			.setViscosity(6000)
-			.setTemperature(1300);
-		
-		boolean isRegistered = !(FluidRegistry.registerFluid(fluid));
-		fluidBlock = new BlockInfiniFluid(fluid, Material.lava, json.toolData.getColorType());
-		fluidBlock.setBlockName(json.name);
-		GameRegistry.registerBlock(fluidBlock, "fluid.molten." + json.name);
-		fluid.setUnlocalizedName(fluidBlock.getUnlocalizedName());
-		
-		if (isRegistered) {
-			fluid = FluidRegistry.getFluid(json.name + ".molten");
-			Block regFluidBlock = fluid.getBlock();
-			if (regFluidBlock != null) {
-				fluidBlock = regFluidBlock;
-			} else {
-				fluid.setBlock(fluidBlock);
-			}
-		} else {
-			fluid.setBlock(fluidBlock);
-		}
-		
-		FluidType.registerFluidType(json.name, fluidBlock, 0, 300, fluid, true);
+	    	    	    
+		fluid = registerFluid(json.name, json.toolData.getColorType());
+				
+		FluidType.registerFluidType(json.name, block, 0, 300, fluid, true);
 		
 		ingotFluid = new FluidStack(fluid, ingotLiquidValue);
 		oreFluid = new FluidStack(fluid, oreLiquidValue);
@@ -265,11 +241,54 @@ public class MaterialData {
 
 	}
 	
+    public Fluid registerFluid(String name, Color color) {
+        return registerFluid(name, name + ".molten", "fluid.molten." + name, color, 3000, 6000, 1300, Material.lava);
+    }
+
+    public Fluid registerFluid(String name, String fluidName, String blockName, Color color, int density, int viscosity, int temperature, Material material) {
+        
+        String texture = "infiliquid_" + name;
+        
+        // create the new fluid
+        Fluid fluid = new Fluid(fluidName).setDensity(density).setViscosity(viscosity).setTemperature(temperature);
+
+        if(material == Material.lava)
+            fluid.setLuminosity(12);
+
+        // register it if it's not already existing
+        boolean isFluidPreRegistered = !FluidRegistry.registerFluid(fluid);
+
+        // register our fluid block for the fluid
+        block = new BlockInfiniFluid(fluid, material, texture, color);
+        block.setBlockName(blockName);
+        GameRegistry.registerBlock(block, blockName);
+
+        fluid.setBlock(block);
+        ((BlockInfiniFluid)block).setFluid(fluid);
+
+        // if the fluid was already registered we use that one instead
+        if (isFluidPreRegistered)
+        {
+            fluid = FluidRegistry.getFluid(fluidName);
+
+            // don't change the fluid icons of already existing fluids
+            if(fluid.getBlock() != null)
+                ((BlockInfiniFluid)block).suppressOverwritingFluidIcons();
+            // if no block is registered with an existing liquid, we set our own
+            else
+                fluid.setBlock(block);
+        }
+
+        return fluid;
+    }
+	
 	private void makeBucket()
 	{				
-		//Attempt at Bucket Implementation
-		fluidBucket = new InfiniBucket(fluidBlock, json.name, json.toolData.getColorType());		
-		GameRegistry.registerItem(fluidBucket, "bucket_" + json.name);
-		FluidContainerRegistry.registerFluidContainer(fluid, new ItemStack(fluidBucket), new ItemStack(Items.bucket));
+        //Attempt at Bucket Implementation
+        if (FluidContainerRegistry.fillFluidContainer(new FluidStack(fluid, 1000), new ItemStack(Items.bucket)) == null) {
+            fluidBucket = new InfiniBucket(block, json.name, json.toolData.getColorType());     
+            GameRegistry.registerItem(fluidBucket, "bucket_" + json.name);
+            FluidContainerRegistry.registerFluidContainer(fluid, new ItemStack(fluidBucket), new ItemStack(Items.bucket));            
+        }
 	}
 }

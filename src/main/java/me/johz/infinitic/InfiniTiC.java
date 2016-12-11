@@ -22,7 +22,7 @@ import me.johz.infinitic.lib.data.MaterialJSON;
 import me.johz.infinitic.lib.helpers.GenericHelper;
 import me.johz.infinitic.lib.helpers.JsonConfigHelper;
 
-@Mod(modid=InfiniTiC.MODID, version=InfiniTiC.VERSION, name=InfiniTiC.NAME, acceptedMinecraftVersions="1.7.10") 
+@Mod(modid=InfiniTiC.MODID, version=InfiniTiC.VERSION, name=InfiniTiC.NAME, acceptedMinecraftVersions="1.7.10",dependencies="required-after:TConstruct") 
 public class InfiniTiC {
 	
 	/**
@@ -90,13 +90,14 @@ public class InfiniTiC {
     			for (MaterialData md: makeMaterialsZipped(file)) {
     				ds.add(md);
     			}
-    		}
-    		
-    		MaterialJSON m = JsonConfigHelper.dataFromJSON(file);
-    		if (m != null) {
-    			ds.add(new MaterialData(m, file.getAbsolutePath()));
-    		} else {
-    			LOGGER.warn("Could not read or parse file '" + file.getName() + "'");
+    		} else if (file.getName().endsWith(".json"))
+    		{
+                MaterialJSON m = JsonConfigHelper.dataFromJSON(file);
+                if (m != null) {
+                    ds.add(new MaterialData(m, file.getAbsolutePath()));
+                } else {
+                    LOGGER.warn("Could not read or parse file '" + file.getName() + "'");
+                }    		    
     		}
     	}
     	

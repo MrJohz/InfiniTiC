@@ -13,7 +13,7 @@ public class MaterialJSON implements IJson {
 	
 	public String name;
 	
-	public String[][] localizations;
+	public LocalizationJSON[] localizations;
 	
 	public NameList whitelist;
 	public NameList blacklist;
