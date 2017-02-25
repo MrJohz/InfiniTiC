@@ -1,0 +1,12 @@
+v0.1.4
+Fixed a problem with colouring multiple molten liquids.  Thanks to the shadowake for raising the issue:
+https://github.com/LakMoore/InfiniTiC/issues/2#issuecomment-264995030
+
+Improved localization, can now accept multiple locales and better variations for fluids and buckets.  New JSON is below.
+
+   "localizations": [{
+ 		"locale": "en_US",
+ 		"solid": "Lapis",
+ 		"liquid": "Molten Lapis",
+ 		"bucket": "Lapis Bucket"
+ 	}]

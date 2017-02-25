@@ -35,12 +35,6 @@ repositories {
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
     
-def mc_version = '1.7.10'
-def mod_version = '0.1.4'
-version = "${mc_version}-${mod_version}"
-group = 'infinitic'
-archivesBaseName = 'Infini-TiC'
-
 // Define properties file
 ext.configFile = file "build.properties"
 
@@ -50,6 +44,10 @@ configFile.withReader {
     prop.load(it)
     project.ext.config = new ConfigSlurper().parse prop
 }
+
+version = "${config.minecraft_version}-${config.mod_version}"
+group = 'infinitic'
+archivesBaseName = 'Infini-TiC'
 
 ext.artifact_version_override = 'NotUsed'
 //gitignored config file -- if this has the entry for override it will override the version for local builds
@@ -152,10 +150,10 @@ curseforge {
 		id = '247823'
 		changelog = file('changelog.txt')
 		releaseType = 'release'
-		addGameVersion '1.7.10'
+		addGameVersion "${config.minecraft_version}"
 
 		mainArtifact(jar) {
-			displayName = "InfiniTiC-${mc_version}-${mod_version}"
+			displayName = "InfiniTiC-${config.minecraft_version}-${config.mod_version}"
 		}
 
 	}
