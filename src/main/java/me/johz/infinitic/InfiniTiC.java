@@ -34,7 +34,7 @@ public class InfiniTiC {
 	
 	public static final String NAME = "Infini-TiC";
     public static final String MODID = "infinitic";
-    public static final String VERSION = "1.7.10-0.1.5";
+    public static final String VERSION = "${MCVERSION}-${MODVERSION}";
     
     public static Logger LOGGER;
     public static File CONFIGDIR;
@@ -43,23 +43,23 @@ public class InfiniTiC {
     
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent e) {
-    	LOGGER = e.getModLog();
-    	CONFIGDIR = new File(e.getModConfigurationDirectory(), InfiniTiC.MODID);
-
-    	if (!CONFIGDIR.exists()) {
-    		CONFIGDIR.mkdirs();
-    	}
-    	
-    	// Read configs
-    	MATERIALS = makeMaterials(CONFIGDIR);
-
-    	//try making the materials in preInit... it still works!
-    	for (MaterialData mat: MATERIALS) {
-    		mat.init();
-    	}
-
-    	//Event Handler... to handle all our events!
-    	MinecraftForge.EVENT_BUS.register(new InfiniEvents());
+	    	LOGGER = e.getModLog();
+	    	CONFIGDIR = new File(e.getModConfigurationDirectory(), InfiniTiC.MODID);
+	
+	    	if (!CONFIGDIR.exists()) {
+	    		CONFIGDIR.mkdirs();
+	    	}
+	    	
+	    	// Read configs
+	    	MATERIALS = makeMaterials(CONFIGDIR);
+	
+	    	//try making the materials in preInit... it still works!
+	    	for (MaterialData mat: MATERIALS) {
+	    		mat.init();
+	    	}
+	
+	    	//Event Handler... to handle all our events!
+	    	MinecraftForge.EVENT_BUS.register(new InfiniEvents());
     }
     
     @Mod.EventHandler
@@ -96,7 +96,7 @@ public class InfiniTiC {
                 if (m != null) {
                     ds.add(new MaterialData(m, file.getAbsolutePath()));
                 } else {
-                    LOGGER.warn("Could not read or parse file '" + file.getName() + "'");
+                    LOGGER.error("Could not read or parse file '" + file.getName() + "'");
                 }    		    
     		}
     	}
@@ -130,7 +130,7 @@ public class InfiniTiC {
     			
     			ds.add(new MaterialData(m, zipDir.getAbsolutePath()));
     		} else {
-    			LOGGER.warn("Could not read or parse file '" + zipDir.getName() + "'");
+    			LOGGER.error("Could not read or parse file '" + zipDir.getName() + "'");
     		}
     	}
     	

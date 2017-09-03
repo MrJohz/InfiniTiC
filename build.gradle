@@ -32,9 +32,6 @@ repositories {
     }
 }
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-    
 // Define properties file
 ext.configFile = file "build.properties"
 
@@ -44,6 +41,9 @@ configFile.withReader {
     prop.load(it)
     project.ext.config = new ConfigSlurper().parse prop
 }
+
+sourceCompatibility = config.java_version
+targetCompatibility = config.java_version    
 
 version = "${config.minecraft_version}-${config.mod_version}"
 group = 'infinitic'
@@ -91,6 +91,7 @@ task buildInfo {
         ext.buildNum = "DEV.${project.buildInfo.revision}"
     }
 }
+
 ext.artifact_version = 'NFG'
 if (System.getenv().ARTIFACT_VERSION == null && artifact_version_override == 'NotUsed') {
     artifact_version = "${config.mod_version}.${project.buildInfo.buildNum}"
@@ -111,7 +112,10 @@ minecraft {
     } else {
 	    runDir = 'eclipse'
     }
-    replace '${version}', project.version
+
+	replace '${MODVERSION}', config.mod_version
+	replace '${MCVERSION}', config.minecraft_version
+
 }
 
 processResources
@@ -123,8 +127,8 @@ processResources
     // Replace stuff in text files, not binaries.
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
-        // Replace version and MCversion
-        expand 'version':artifact_version,'MCversion':config.minecraft_version
+        // Replace version and mc_version
+        expand 'version': config.mod_version, 'mc_version':config.minecraft_version
     }
         
     // Copy everything else that's not text

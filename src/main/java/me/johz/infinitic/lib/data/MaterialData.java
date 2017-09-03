@@ -156,6 +156,9 @@ public class MaterialData {
 		NBTTagCompound item;
 		tag.setInteger("Id", json.toolData.ID);
 		tag.setString("Name", json.name);
+		if(json.localizations.length > 0) {
+			tag.setString("localizationString", json.localizations[0].solid);	
+		}
 		tag.setInteger("Durability", json.toolData.durability);
 		tag.setInteger("HarvestLevel", json.toolData.harvestLevel);
 		tag.setInteger("MiningSpeed", json.toolData.miningspeed);
@@ -171,10 +174,8 @@ public class MaterialData {
 		if (json.toolData.style != null) {
 			tag.setString("Style", json.toolData.style);
 		}
-		if (json.toolData.stonebound > 0) {
+		if (json.toolData.stonebound != 0) {
 			tag.setFloat("Stonebound", json.toolData.stonebound);
-		} else if (json.toolData.stonebound < 0) {
-			tag.setFloat("Jagged", json.toolData.stonebound);
 		}
 		if (json.toolData.drawspeed > 0) {
 			tag.setInteger("Bow_DrawSpeed", json.toolData.drawspeed); 
