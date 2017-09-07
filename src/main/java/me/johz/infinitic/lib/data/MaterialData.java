@@ -1,44 +1,39 @@
 package me.johz.infinitic.lib.data;
 
-import java.awt.Color;
 import java.util.HashMap;
 
-import cpw.mods.fml.common.event.FMLInterModComms;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.LanguageRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.oredict.OreDictionary;
 import me.johz.infinitic.InfiniTiC;
-import me.johz.infinitic.blocks.BlockInfiniFluid;
-import me.johz.infinitic.items.InfiniBucket;
+import me.johz.infinitic.client.model.InfiniFluidStateMapper;
 import me.johz.infinitic.lib.errors.JSONValidationException;
 import me.johz.infinitic.lib.helpers.GenericHelper;
-import me.johz.infinitic.lib.helpers.NameConversionHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.init.Items;
+import slimeknights.tconstruct.library.materials.ExtraMaterialStats;
+import slimeknights.tconstruct.library.materials.HandleMaterialStats;
+import slimeknights.tconstruct.library.materials.HeadMaterialStats;
+import slimeknights.tconstruct.library.materials.Material;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import tconstruct.library.TConstructRegistry;
-import tconstruct.library.crafting.FluidType;
-import tconstruct.library.crafting.Smeltery;
+import slimeknights.tconstruct.library.MaterialIntegration;
+import slimeknights.tconstruct.library.TinkerRegistry;
+import slimeknights.tconstruct.library.client.MaterialRenderInfo;
+import slimeknights.tconstruct.library.fluid.FluidMolten;
+import slimeknights.tconstruct.smeltery.TinkerSmeltery;
+import slimeknights.tconstruct.smeltery.block.BlockMolten;
 
 public class MaterialData {
-	
-	private static final int ingotLiquidValue = 144;
-	private static final int oreLiquidValue = ingotLiquidValue * 2;
-	private static final int blockLiquidValue = ingotLiquidValue * 9;
-	@SuppressWarnings("unused")
-	private static final int chunkLiquidValue = ingotLiquidValue / 2;
-	@SuppressWarnings("unused")
-	private static final int nuggetLiquidValue = ingotLiquidValue / 9;
-	private static final int defaultMeltingValue = 500;
-	
+		
 	public MaterialJSON json;
+
+	public Material material;
 	public Fluid fluid;
+	public Item fluidItem;
 	public Block ore;
 	public Item dustSmall;
 	public Item dust;
@@ -47,14 +42,11 @@ public class MaterialData {
 	public ItemStack solidBlock;
 	public Item chunk;
 	public Item gem;
-	
-	FluidStack ingotFluid;
-	FluidStack oreFluid;
-	FluidStack blockFluid;
-	
+		
 	public Block block;
-	public InfiniBucket fluidBucket;
 	public int meltingValue;
+	
+	protected MaterialIntegration integration;
 	
 	private boolean isValid = false;
 	
@@ -70,226 +62,152 @@ public class MaterialData {
 		}
 	}
 	
-	public void init() {
+	public void preInit(Side side) {
 	    if (isValid)
 	    {
-	        getSolids();
+	    		getSolids();
+	    		addToOreDict();
+	    		makeMaterial();
 	        makeFluid();
-	        makeBucket();
+	    		integrateMaterial();
+
+	    		if(side == Side.CLIENT) {
+	    			
+	    		    Item fluidItem = Item.getItemFromBlock(block);
+	    		    InfiniFluidStateMapper mapper = new InfiniFluidStateMapper(fluid);
+	    		    // item-model
+	    		    ModelLoader.registerItemVariants(fluidItem);
+	    		    ModelLoader.setCustomMeshDefinition(fluidItem, mapper);
+	    		    // block-model
+	    		    ModelLoader.setCustomStateMapper(block, mapper);
+
+			    int color = json.getToolColorInt();
+			    float shinyness = 0.25f;
+			    float brightness = 0.5f;
+			    float hueshift = -0.1f;	    
+			    material.setRenderInfo(new MaterialRenderInfo.Metal(color, shinyness, brightness, hueshift));
+			}
+
+	    		addMaterialStats();
 	        addLocalization();
-	        addMaterial();
-	        saveRecipes();	        
+	        
 	    }
 	}
-	
+
+	public void init(Side side) {
+	    if (isValid)
+	    {
+		    if(integration != null) integration.integrateRecipes();
+		    
+			if (json.hasGems()) {
+				TinkerRegistry.registerMelting("gem" + GenericHelper.capitalizeFirstLetter(json.name), fluid, Material.VALUE_Ingot);
+				TinkerRegistry.registerTableCasting(json.getGems()[0], TinkerSmeltery.castGem, fluid, Material.VALUE_Gem);				
+			}
+
+	    }		
+	}
+
+	private void addToOreDict() {
+		String suffix = GenericHelper.capitalizeFirstLetter(json.name);
+		String[] types = {"ingot", "nugget", "gem", "dust", "block", "ore"};
+		
+		for (String type : types) {
+			for (ItemStack item : json.getOfType(type)) {
+				OreDictionary.registerOre(type + suffix, item);				
+			}			
+		}
+	}
+
+	private void integrateMaterial() {
+		String prefix = "ingot";
+		String suffix = GenericHelper.capitalizeFirstLetter(json.name);
+		ItemStack item = ingot;
+
+		if(json.hasGems()) {
+			prefix = "gem";
+			item = json.getGems()[0];
+		}
+		
+		material.addItem(prefix + suffix, 1, Material.VALUE_Ingot);
+        material.setRepresentativeItem(item);						
+		integration = new MaterialIntegration(prefix + suffix, material, fluid, suffix);
+		if(json.canCraftToolForge) {			
+			integration.toolforge();
+		}
+		integration.integrate();
+	}
+
+	private void makeMaterial() {
+		material = new Material(json.name, json.getTextColorInt());
+        material.setCraftable(false).setCastable(true);
+
+	}
+
 	private void addLocalization() {
 		for (LocalizationJSON locale: json.localizations) {
 			HashMap<String, String> map = new HashMap<String, String>();
-			map.put("tile.fluid.molten." + json.name + ".name", locale.liquid);
-            map.put("item.infinitic.bucket." + json.name + ".name", locale.bucket);
+			map.put("material." + json.name.toLowerCase() + ".name", locale.solid);
+			map.put("fluid.infinitic." + json.name.toLowerCase() + ".name", locale.liquid);
 			LanguageRegistry.instance().injectLanguage(locale.locale, map);
 		}
 	}
 
 	private void getSolids()
 	{
-		//Get the ore block
-		
-		//If no ore block exists, make one
+		//Get the ore block		
+		//TODO: If no ore block exists, make one???
 		
 		//Get the solid block
 		solidBlock = GenericHelper.safeFirst(json.getBlocks());		
-		//If no solid block exists, make one
+		//TODO: If no solid block exists, make one???
 
 		//Get the ingot
 		ingot = GenericHelper.safeFirst(json.getIngots());
-		//if no ingot exists, make one
+		//TODO: if no ingot exists, make one???
 
-	}
+		//TODO: if no nugget exists, make one???
+		//TODO: if no dust exists, make one???
+		//TODO: if no gear exists, make one???
 
-	private void saveRecipes() {
-		
-		if (json.toolData.temperature > 0) {
-			meltingValue = json.toolData.temperature;
-		}
-		else
-		{
-			meltingValue = defaultMeltingValue;
-		}		
-		
-		// Melting recipes
-		
-		Block renderBlock = NameConversionHelper.getBlock(json.renderblock); 
-		Block renderOre = NameConversionHelper.getBlock(json.renderore); 
-		
-		for (ItemStack itm: json.getBlocks()) {
-			Smeltery.addMelting(itm, renderBlock, json.renderblockMeta, meltingValue * 5, blockFluid);
-		}
-		
-		for (ItemStack itm: json.getOres()) {
-			Smeltery.addMelting(itm, renderOre, json.renderoreMeta, meltingValue, oreFluid);
-		}
-		
-		for (ItemStack itm: json.getIngots()) {
-			Smeltery.addMelting(itm, renderBlock, json.renderblockMeta, meltingValue, ingotFluid);
-		}
-		
-		for (ItemStack itm: json.getDusts()) {
-			Smeltery.addMelting(itm, renderBlock, json.renderblockMeta, meltingValue, ingotFluid);
-		}
-		
-		// Unsmelting recipes		
-		if (solidBlock != null) {
-			TConstructRegistry.getBasinCasting().addCastingRecipe(solidBlock, blockFluid, 100);
-		}
-		if (ingot != null) {
-			ItemStack ingotPattern = TConstructRegistry.getItemStack("ingotCast");
-			TConstructRegistry.getTableCasting().addCastingRecipe(ingot, ingotFluid, ingotPattern, 50);
-		}
 	}
 	
-	private void addMaterial() {
+	private void addMaterialStats() {
 		
-		// TODO: Work out how to check if there's a material pre-registered
-		
-		NBTTagCompound tag = new NBTTagCompound();
-		NBTTagCompound item;
-		tag.setInteger("Id", json.toolData.ID);
-		tag.setString("Name", json.name);
-		if(json.localizations.length > 0) {
-			tag.setString("localizationString", json.localizations[0].solid);	
-		}
-		tag.setInteger("Durability", json.toolData.durability);
-		tag.setInteger("HarvestLevel", json.toolData.harvestLevel);
-		tag.setInteger("MiningSpeed", json.toolData.miningspeed);
-		tag.setFloat("HandleModifier", json.toolData.handleModifier);
-		tag.setInteger("Color", json.toolData.getColor(true));
-		
-		if (json.toolData.attack != 0) {
-			tag.setInteger("Attack", json.toolData.attack);
-		}
-		if (json.toolData.reinforced != 0) {
-			tag.setInteger("Reinforced", json.toolData.reinforced);
-		}
-		if (json.toolData.style != null) {
-			tag.setString("Style", json.toolData.style);
-		}
-		if (json.toolData.stonebound != 0) {
-			tag.setFloat("Stonebound", json.toolData.stonebound);
-		}
-		if (json.toolData.drawspeed > 0) {
-			tag.setInteger("Bow_DrawSpeed", json.toolData.drawspeed); 
-		}
-		if (json.toolData.projectilespeed > 0) {
-			tag.setFloat("Bow_ProjectileSpeed", json.toolData.projectilespeed); 
-		}
-		if (json.toolData.projectilemass > 0) {
-			tag.setFloat("Projectile_Mass", json.toolData.projectilemass); 
-		}
-		if (json.toolData.projectilefragility > 0) {
-			tag.setFloat("Projectile_Fragility", json.toolData.projectilefragility); 
-		}
-		
-		FMLInterModComms.sendMessage("TConstruct", "addMaterial", tag);
+	    TinkerRegistry.addMaterialStats(material,
+                new HeadMaterialStats(json.toolData.durability, json.toolData.miningspeed, json.toolData.attack, json.toolData.harvestLevel),
+                new HandleMaterialStats(json.toolData.handleModifier, json.toolData.durability));
 
-		//Add the ingot as a repair material
-		ItemStack ingotItm = GenericHelper.safeFirst(json.getIngots());
-		if (ingotItm != null)
-		{
-			tag = new NBTTagCompound();
-			tag.setInteger("MaterialId", json.toolData.ID);
-			tag.setInteger("Value", 2); //2 halves
-			item = new NBTTagCompound();
-			ingotItm.writeToNBT(item);
-			tag.setTag("Item", item);
-			FMLInterModComms.sendMessage("TConstruct", "addMaterialItem", tag);		
-		}
+	    if(json.toolData.extraDurability != 0) {
+		    TinkerRegistry.addMaterialStats(material,
+	                new ExtraMaterialStats(json.toolData.extraDurability));
+	    }
+	    
+	    //TODO: Tinker Bows don't appear to be implemented in MC 1.8.9!
 
-		//Add the fluid as the casting material
-		tag = new NBTTagCompound();
-		(new FluidStack(fluid, 1)).writeToNBT(tag);
-		tag.setInteger("MaterialId", json.toolData.ID);
-		FMLInterModComms.sendMessage("TConstruct", "addPartCastingMaterial", tag);
-
-		/*
-		//add the drop and it's chunk to the part builder
-		tag = new NBTTagCompound();
-		tag.setInteger("MaterialId", json.toolData.ID); // output material id
-		item = new NBTTagCompound();
-		(new ItemStack(TinkerSmeltery.smeltery, 1, 2)).writeToNBT(item); // seared brick block
-		tag.setTag("Item", item);
-
-		item = new NBTTagCompound();
-		(new ItemStack(TinkerTools.materials, 1, 2)).writeToNBT(item); // seared brick item
-		tag.setTag("Shard", item);
-
-		// 1 value = 1 shard. So 1 blocks like stone usually have value 2.
-		// Seared Brick is the shard, the block consists of 4 bricks, therefore value 4
-		tag.setInteger("Value", 4);
-		FMLInterModComms.sendMessage("TConstruct", "addPartBuilderMaterial", tag);
-		*/
-	}	
+	}
 	
 	private void makeFluid() {
 	    	    	    
-		fluid = registerFluid(json.name, json.toolData.getColorType());
-				
-		FluidType.registerFluidType(json.name, block, 0, 300, fluid, true);
+	    	String name = json.name.toLowerCase();
+		fluid = new FluidMolten(name, json.getFluidColorInt()); //, InfiniTiC.ICON_StillFluid, InfiniTiC.ICON_FlowingFluid);
+	    fluid.setUnlocalizedName(InfiniTiC.MODID + "." + name);  //For localization
+	    FluidRegistry.registerFluid(fluid);
+
+		if (json.fluidData != null) {
+			if(json.fluidData.density > 0) fluid.setDensity(json.fluidData.density);
+			if(json.fluidData.temperature > 0) fluid.setTemperature(json.fluidData.temperature);
+			if(json.fluidData.viscosity > 0) fluid.setViscosity(json.fluidData.viscosity);
+			if(json.fluidData.luminosity > 0) fluid.setLuminosity(json.fluidData.luminosity);			
+			fluid.setRarity(json.fluidData.getRarity());
+		}
+
+	    block = new BlockMolten(fluid);
+        name = "molten_" + name;
+	    block.setUnlocalizedName(InfiniTiC.MODID + "." + name);  //For localization
+	    block.setRegistryName(name);
+	    GameRegistry.registerBlock(block, name);
+		FluidRegistry.addBucketForFluid(fluid);
 		
-		ingotFluid = new FluidStack(fluid, ingotLiquidValue);
-		oreFluid = new FluidStack(fluid, oreLiquidValue);
-		blockFluid = new FluidStack(fluid, blockLiquidValue);
-
 	}
 	
-    public Fluid registerFluid(String name, Color color) {
-        return registerFluid(name, name + ".molten", "fluid.molten." + name, color, 3000, 6000, 1300, Material.lava);
-    }
-
-    public Fluid registerFluid(String name, String fluidName, String blockName, Color color, int density, int viscosity, int temperature, Material material) {
-        
-        String texture = "infiliquid_" + name;
-        
-        // create the new fluid
-        Fluid fluid = new Fluid(fluidName).setDensity(density).setViscosity(viscosity).setTemperature(temperature);
-
-        if(material == Material.lava)
-            fluid.setLuminosity(12);
-
-        // register it if it's not already existing
-        boolean isFluidPreRegistered = !FluidRegistry.registerFluid(fluid);
-
-        // register our fluid block for the fluid
-        block = new BlockInfiniFluid(fluid, material, texture, color);
-        block.setBlockName(blockName);
-        GameRegistry.registerBlock(block, blockName);
-
-        fluid.setBlock(block);
-        ((BlockInfiniFluid)block).setFluid(fluid);
-
-        // if the fluid was already registered we use that one instead
-        if (isFluidPreRegistered)
-        {
-            fluid = FluidRegistry.getFluid(fluidName);
-
-            // don't change the fluid icons of already existing fluids
-            if(fluid.getBlock() != null)
-                ((BlockInfiniFluid)block).suppressOverwritingFluidIcons();
-            // if no block is registered with an existing liquid, we set our own
-            else
-                fluid.setBlock(block);
-        }
-
-        return fluid;
-    }
-	
-	private void makeBucket()
-	{				
-        //Attempt at Bucket Implementation
-        if (FluidContainerRegistry.fillFluidContainer(new FluidStack(fluid, 1000), new ItemStack(Items.bucket)) == null) {
-            fluidBucket = new InfiniBucket(block, json.name, json.toolData.getColorType());     
-            GameRegistry.registerItem(fluidBucket, "bucket_" + json.name);
-            FluidContainerRegistry.registerFluidContainer(fluid, new ItemStack(fluidBucket), new ItemStack(Items.bucket));            
-        }
-	}
 }

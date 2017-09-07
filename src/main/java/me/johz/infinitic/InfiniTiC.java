@@ -9,29 +9,33 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fluids.FluidRegistry;
 
 import org.apache.logging.log4j.Logger;
 
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import slimeknights.tconstruct.library.fluid.FluidMolten;
+import slimeknights.tconstruct.smeltery.block.BlockMolten;
+import me.johz.infinitic.client.Command;
+import me.johz.infinitic.client.model.InfiniFluidStateMapper;
 import me.johz.infinitic.lib.data.MaterialData;
 import me.johz.infinitic.lib.data.MaterialJSON;
 import me.johz.infinitic.lib.helpers.GenericHelper;
 import me.johz.infinitic.lib.helpers.JsonConfigHelper;
 
-@Mod(modid=InfiniTiC.MODID, version=InfiniTiC.VERSION, name=InfiniTiC.NAME, acceptedMinecraftVersions="1.7.10",dependencies="required-after:TConstruct") 
+@Mod(modid=InfiniTiC.MODID, version=InfiniTiC.VERSION, name=InfiniTiC.NAME, acceptedMinecraftVersions="1.8.9",dependencies="required-after:tconstruct") 
 public class InfiniTiC {
-	
-	/**
-	 * THE BIG LONG LIST OF THINGS TO DO:
-	 * 
-	 * TODO: Auto-select material ids from range
-	 * TODO: Get TiC to understand how much liquid is in the smeltery
-	 */
-	
+		
 	public static final String NAME = "Infini-TiC";
     public static final String MODID = "infinitic";
     public static final String VERSION = "${MCVERSION}-${MODVERSION}";
@@ -39,9 +43,17 @@ public class InfiniTiC {
     public static Logger LOGGER;
     public static File CONFIGDIR;
     
+    //not currently used as the ones from TConstruct are nicer!
+    public static ResourceLocation ICON_StillFluid = new ResourceLocation(InfiniTiC.MODID, "blocks/still_fluid");
+    public static ResourceLocation ICON_FlowingFluid = new ResourceLocation(InfiniTiC.MODID, "blocks/flowing_fluid");
+    
     public static MaterialData[] MATERIALS;
     
-    @Mod.EventHandler
+    static {
+        FluidRegistry.enableUniversalBucket();
+    	}
+    
+    @EventHandler
     public void preInit(FMLPreInitializationEvent e) {
 	    	LOGGER = e.getModLog();
 	    	CONFIGDIR = new File(e.getModConfigurationDirectory(), InfiniTiC.MODID);
@@ -49,65 +61,91 @@ public class InfiniTiC {
 	    	if (!CONFIGDIR.exists()) {
 	    		CONFIGDIR.mkdirs();
 	    	}
-	    	
+	    		    	
 	    	// Read configs
 	    	MATERIALS = makeMaterials(CONFIGDIR);
-	
-	    	//try making the materials in preInit... it still works!
+	    	
+	    	//we need one unused but registered fluid to duplicate later
+	    	makeInfiniFluid();
+
+	    	//make the materials and register them with TConstruct and the game
 	    	for (MaterialData mat: MATERIALS) {
-	    		mat.init();
+	    		mat.preInit(e.getSide());
 	    	}
-	
+	    	
 	    	//Event Handler... to handle all our events!
 	    	MinecraftForge.EVENT_BUS.register(new InfiniEvents());
     }
+
+	private void makeInfiniFluid() {
+		String name = "infinifluid";
+		FluidMolten fluid = new FluidMolten(name, 0xFFFF0000); // , InfiniTiC.ICON_StillFluid, InfiniTiC.ICON_FlowingFluid);
+		fluid.setUnlocalizedName("unused");
+		FluidRegistry.registerFluid(fluid);
+		BlockMolten block = new BlockMolten(fluid);
+		block.setUnlocalizedName(InfiniTiC.MODID + "." + name);
+		block.setRegistryName(new ResourceLocation(InfiniTiC.MODID, name));
+		GameRegistry.registerBlock(block, InfiniTiC.MODID + ":" + name);
+
+		Item item = Item.getItemFromBlock(block);
+		InfiniFluidStateMapper mapper = new InfiniFluidStateMapper(fluid);
+		// item-model
+		ModelLoader.registerItemVariants(item);
+		ModelLoader.setCustomMeshDefinition(item, mapper);
+		// block-model
+		ModelLoader.setCustomStateMapper(block, mapper);
+	}
     
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent e) { }
+	@EventHandler
+	public void init(FMLInitializationEvent e) {
+		for (MaterialData mat : MATERIALS) {
+			mat.init(e.getSide());
+		}
+	}
     
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent e) {
-    	
-    	
+    @EventHandler
+    public void postInit(FMLPostInitializationEvent e) { }
+    
+    @EventHandler
+    public void serverLoad(FMLServerStartingEvent event) {
+        event.registerServerCommand(new Command());
     }
     
-    
-    /**************************
-     * MRJOHZ'S PRIVATE PARTS *
-     **************************/
-    
-    private MaterialData[] makeMaterials(File dir) {
-    	assert dir.isDirectory() : "Asked to make materials from a non-directory, panic!";
-    	
-    	List<MaterialData> ds = new ArrayList<MaterialData>();
-    	
-    	for (File file: dir.listFiles()) {
-    		if (file.isDirectory()) {
-    			for (MaterialData md: makeMaterials(file)) {
-    				ds.add(md);
-    			}
-    		} else if (GenericHelper.isZipFile(file)) {
-    			for (MaterialData md: makeMaterialsZipped(file)) {
-    				ds.add(md);
-    			}
-    		} else if (file.getName().endsWith(".json"))
-    		{
-                MaterialJSON m = JsonConfigHelper.dataFromJSON(file);
-                if (m != null) {
-                    ds.add(new MaterialData(m, file.getAbsolutePath()));
-                } else {
-                    LOGGER.error("Could not read or parse file '" + file.getName() + "'");
-                }    		    
-    		}
-    	}
-    	
+	/**************************
+	 * MRJOHZ'S PRIVATE PARTS *
+	 **************************/
+
+	private MaterialData[] makeMaterials(File dir) {
+		assert dir.isDirectory() : "Asked to make materials from a non-directory, panic!";
+
+		List<MaterialData> ds = new ArrayList<MaterialData>();
+
+		for (File file : dir.listFiles()) {
+			if (file.isDirectory()) {
+				for (MaterialData md : makeMaterials(file)) {
+					ds.add(md);
+				}
+			} else if (GenericHelper.isZipFile(file)) {
+				for (MaterialData md : makeMaterialsZipped(file)) {
+					ds.add(md);
+				}
+			} else if (file.getName().endsWith(".json")) {
+				MaterialJSON m = JsonConfigHelper.dataFromJSON(file);
+				if (m != null) {
+					ds.add(new MaterialData(m, file.getAbsolutePath()));
+				} else {
+					LOGGER.error("Could not read or parse file '" + file.getName() + "'");
+				}
+			}
+		}
+
 		return ds.toArray(new MaterialData[ds.size()]);
-    }
+	}
     
 	private MaterialData[] makeMaterialsZipped(File zipDir) {
-    	List<MaterialData> ds = new ArrayList<MaterialData>();
-    	
-    	ZipFile dir;
+		List<MaterialData> ds = new ArrayList<MaterialData>();
+
+		ZipFile dir;
 		try {
 			dir = new ZipFile(zipDir);
 		} catch (ZipException e) {
@@ -115,34 +153,39 @@ public class InfiniTiC {
 		} catch (IOException e) {
 			return new MaterialData[0];
 		}
-		
-    	Enumeration<? extends ZipEntry> entries = dir.entries();
-    	while (entries.hasMoreElements()) {
-    		ZipEntry zfile = entries.nextElement();
-    		MaterialJSON m;
+
+		Enumeration<? extends ZipEntry> entries = dir.entries();
+		while (entries.hasMoreElements()) {
+			ZipEntry zfile = entries.nextElement();
+			MaterialJSON m;
 			try {
 				m = JsonConfigHelper.dataFromStream(dir.getInputStream(zfile));
 			} catch (IOException e) {
-				try { dir.close(); } catch (IOException e2) { return new MaterialData[0]; }
+				try {
+					dir.close();
+				} catch (IOException e2) {
+					return new MaterialData[0];
+				}
 				return new MaterialData[0];
 			}
-    		if (m != null) {
-    			
-    			ds.add(new MaterialData(m, zipDir.getAbsolutePath()));
-    		} else {
-    			LOGGER.error("Could not read or parse file '" + zipDir.getName() + "'");
-    		}
-    	}
-    	
-    	try {
+			if (m != null) {
+
+				ds.add(new MaterialData(m, zipDir.getAbsolutePath()));
+			} else {
+				LOGGER.error("Could not read or parse file '" + zipDir.getName() + "'");
+			}
+		}
+
+		try {
 			dir.close();
 		} catch (IOException e) {
 			return new MaterialData[0];
 		}
-    	
-    	if (ds.size() == 0) {
-    		LOGGER.warn("Exploration of zipfile '" + zipDir.getAbsolutePath() + "' yielded no config files.  Is this really right?");
-    	}
-    	return ds.toArray(new MaterialData[ds.size()]);
-    }
+
+		if (ds.size() == 0) {
+			LOGGER.warn("Exploration of zipfile '" + zipDir.getAbsolutePath()
+					+ "' yielded no config files.  Is this really right?");
+		}
+		return ds.toArray(new MaterialData[ds.size()]);
+	}
 }

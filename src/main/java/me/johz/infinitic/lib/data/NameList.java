@@ -11,6 +11,8 @@ public class NameList implements IJson {
 	
 	public String[] oredict;
 	public String[] ingots;
+	public String[] nuggets;
+	public String[] gems;
 	public String[] dusts;
 	public String[] blocks;
 	public String[] ores;
@@ -23,6 +25,14 @@ public class NameList implements IJson {
 		return getThings("ingot");
 	}
 	
+	public String[] getNuggets() {
+		return getThings("nugget");
+	}
+
+	public String[] getGems() {
+		return getThings("gem");
+	}
+
 	public String[] getDusts() {
 		return getThings("dust");
 	}
@@ -37,8 +47,12 @@ public class NameList implements IJson {
 		
 		if (type == "ingot") {
 			itemArray = ingots;
+		} else if (type == "nugget") {
+			itemArray = nuggets;
 		} else if (type == "dust") {
 			itemArray = dusts;
+		} else if (type == "gem") {
+			itemArray = gems;
 		} else if (type == "block") {
 			itemArray = blocks;
 		} else if (type == "ore") {
@@ -52,6 +66,10 @@ public class NameList implements IJson {
 		for (String name : prependOredict(type)) {
 			l.add("ore:".concat(name));
 		}
+		//"whitelist": {
+		//"oredict": ["Diamond"],
+		//
+		// will give "ore:ingotDiamond"
 		
 		return l.toArray(new String[l.size()]);
 	}
@@ -60,8 +78,14 @@ public class NameList implements IJson {
 		if (ingots == null) {
 			ingots = new String[0];
 		}
+		if (nuggets == null) {
+			nuggets = new String[0];
+		}
 		if (dusts == null) {
 			dusts = new String[0];
+		}
+		if (gems == null) {
+			gems = new String[0];
 		}
 		if (blocks == null) {
 			blocks = new String[0];

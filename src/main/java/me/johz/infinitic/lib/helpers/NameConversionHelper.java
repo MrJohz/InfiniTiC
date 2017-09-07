@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.Level;
 
-import cpw.mods.fml.common.FMLLog;
 import me.johz.infinitic.InfiniTiC;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -20,6 +19,10 @@ public class NameConversionHelper {
 		public String modid;
 		public String itemname;
 		public int metadata;
+
+		/*
+		 * true when the name is from the oreDictionary e.g. ore:ingotIron
+		 */
 		public boolean isOreDict;
 		
 		NamedItem(String name) 
@@ -106,7 +109,7 @@ public class NameConversionHelper {
 	private static boolean validate(String name) {
 		if (name == null || name.length() == 0)
 		{
-			FMLLog.getLogger().log(Level.ERROR, "Name has not been specified");
+			InfiniTiC.LOGGER.error("Name has not been specified");
 			return false;
 		}				
 		return true;
@@ -127,7 +130,7 @@ public class NameConversionHelper {
 			return null;
 		}
 		
-		Item i = (Item) Item.itemRegistry.getObject(itm.modid + ":" + itm.itemname);
+		Item i = (Item) Item.getByNameOrId(itm.modid + ":" + itm.itemname);
 		
 		return new ItemStack(i, 1, itm.metadata);
 	}
@@ -160,7 +163,7 @@ public class NameConversionHelper {
 			ItemStack i = getItem(name);
 			if (i.getItem() == null)
 			{
-				FMLLog.getLogger().log(Level.WARN, InfiniTiC.MODID + ": Unable to find a material named " + item.itemname);
+				InfiniTiC.LOGGER.warn("Unable to find a material named " + item.itemname);
 			}
 			else
 				l.add(i);
@@ -175,7 +178,7 @@ public class NameConversionHelper {
 		if (item.isOreDict) {
 			return null;
 		} else {
-			return (Block) Block.blockRegistry.getObject(item.modid + ":" + item.itemname);
+			return (Block) Block.getBlockFromName(item.modid + ":" + item.itemname);
 		}
 	}
 
@@ -186,7 +189,7 @@ public class NameConversionHelper {
 		if (item.isOreDict) {
 			return false;
 		} else {
-			return Block.blockRegistry.containsKey(item.modid + ":" + item.itemname);
+			return Block.getBlockFromName(item.modid + ":" + item.itemname) != null;
 		}
 	}
 	

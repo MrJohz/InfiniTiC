@@ -1,3 +1,13 @@
+v0.1.6
+Only available for MC 1.8.9
+Updated to MC 1.8.9, Forge 11.15.1.2318, TConstruct 2.2.1, Java 1.8
+NEW JSON format. Should be backward compatible!!??  Check the wiki for an example.
+Added some default values, which should make the JSON parsing a little more forgiving.
+Removed Infini-Buckets (shed a small tear) in favour of Forge Buckets.
+Kept and fixed Infini-Fluids.
+Added "/infinitic hand" command.  Very similar (borrowed from) CraftTweaker.  Formatting tweaks for this mod.
+Added smelting and casting of Gems (hurrah!).
+
 v0.1.5
 Tools and parts are now named correctly (using the "solid" entry from the localizations)
 The "Jagged" modifier can now be applied (using a negative Stonebound value) Thanks to Runeforger678 for raising the issue.

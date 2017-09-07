@@ -1,3 +1,4 @@
+
 buildscript {
     repositories {
         mavenCentral()
@@ -11,15 +12,19 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
     }
 }
 
 plugins {
-	id 'com.matthewprenger.cursegradle' version '1.0.8'
+	id "com.matthewprenger.cursegradle" version "1.0.9"
 }
 
-apply plugin: 'forge'
+task wrapper(type: Wrapper) {
+   gradleVersion = '2.12' //version required
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
 
 repositories {
     maven {
@@ -66,12 +71,8 @@ if (configFile2.exists()){
 }
 
 dependencies {
-    compile "codechicken:CodeChickenLib:${config.minecraft_version}-${config.CCLIB_version}:dev"
-    compile "codechicken:CodeChickenCore:${config.minecraft_version}-${config.CCC_version}:dev"
-    compile "codechicken:ForgeMultipart:${config.minecraft_version}-${config.FMP_version}:dev"
-    compile "codechicken:NotEnoughItems:${config.minecraft_version}-${config.NEI_version}:dev"
-    compile "mantle:Mantle:${config.minecraft_version}-${config.mantle_version}:deobf"
-    compile "tconstruct:TConstruct:${config.minecraft_version}-${config.tconstruct_version}:deobf"
+    deobfCompile "slimeknights.mantle:Mantle:${config.mantle_version}"
+    deobfCompile "slimeknights:TConstruct:${config.tconstruct_version}"
 }
 
 // Finds and sets version data
@@ -103,11 +104,11 @@ if (artifact_version_override != 'NotUsed') {
     artifact_version = "${artifact_version_override}"
 }
 
-version = "${config.minecraft_version}-${artifact_version}"
+//version = "${config.minecraft_version}-${artifact_version}"
 
 minecraft {
-    mappings = 'stable_12'
-    version = config.minecraft_version + "-" + config.forge_version + "-" + config.minecraft_version
+    mappings = 'stable_22'
+    version = config.minecraft_version + '-' + config.forge_version + '-' + config.minecraft_version
     if (file('../run').exists()) {
 	    runDir = '../run/eclipse'
     } else {
@@ -159,6 +160,10 @@ curseforge {
 
 		mainArtifact(jar) {
 			displayName = "InfiniTiC-${config.minecraft_version}-${config.mod_version}"
+			relations {
+		        requiredLibrary 'tinkers-construct' // Tinkers Construct is required
+		        requiredLibrary 'mantle' // Mantle is required
+        		}
 		}
 
 	}
