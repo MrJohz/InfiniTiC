@@ -12,10 +12,10 @@ import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextComponentString;
 
 /**
  * Bulk of this class was taken from CraftTweaker where the Authors were listed as below
@@ -48,18 +48,18 @@ public class Command implements ICommand {
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		
 		if (args.length < 1 || (!"hand".equalsIgnoreCase(args[0]))) {
-			sender.addChatMessage(new ChatComponentText("Need to specify 'hand'."));
-			sender.addChatMessage(new ChatComponentText(this.getCommandUsage(sender)));
+			sender.addChatMessage(new TextComponentString("Need to specify 'hand'."));
+			sender.addChatMessage(new TextComponentString(this.getCommandUsage(sender)));
 			return;
 		}
 		
 		if(sender.getCommandSenderEntity() instanceof EntityPlayer) {
             // Gets player and held item
             EntityPlayer player = (EntityPlayer) sender.getCommandSenderEntity();
-            ItemStack heldItem = player.getHeldItem();            
+            ItemStack heldItem = player.getHeldItemMainhand();
             
             // Tries to get name of held item first
             if(heldItem != null) {
@@ -77,28 +77,28 @@ public class Command implements ICommand {
                         withNBT = ".withTag(" + nbt + ")";
                 }
 
-                sender.addChatMessage(new ChatComponentText("Item \u00A72" + itemName + "\u00A7a" + withNBT));
+                sender.addChatMessage(new TextComponentString("Item \u00A72" + itemName + "\u00A7a" + withNBT));
                 String toCopy = "\"" + itemName + "\"";
 
                 // adds the oredict names if it has some
                 if(oreDictNames.size() > 0) {
-                    sender.addChatMessage(new ChatComponentText("\u00A73OreDict Entries:"));
+                    sender.addChatMessage(new TextComponentString("\u00A73OreDict Entries:"));
                     for(String oreName : oreDictNames) {
-                        sender.addChatMessage(new ChatComponentText(" \u00A7e- \u00A7b" + oreName));
+                        sender.addChatMessage(new TextComponentString(" \u00A7e- \u00A7b" + oreName));
                         toCopy += ", \"ore:" + oreName + "\"";
                     }
                 } else {
-                    sender.addChatMessage(new ChatComponentText("\u00A73No OreDict Entries"));
+                    sender.addChatMessage(new TextComponentString("\u00A73No OreDict Entries"));
                 }
 
                 ClipboardHelper.copyStringPlayer(player, toCopy);
-                sender.addChatMessage(new ChatComponentText("Copied [\u00A76" + toCopy + "\u00A7r] to the clipboard"));
+                sender.addChatMessage(new TextComponentString("Copied [\u00A76" + toCopy + "\u00A7r] to the clipboard"));
                 
             } else {
                 // if hand is empty, tries to get oreDict of block
-                MovingObjectPosition rayTraceResult = GenericHelper.getPlayerLookat(player, 100);
+	            	RayTraceResult rayTraceResult = GenericHelper.getPlayerLookat(player, 100);
                 
-                if(rayTraceResult != null && rayTraceResult.typeOfHit == MovingObjectType.BLOCK) {
+            		if(rayTraceResult != null && rayTraceResult.typeOfHit == RayTraceResult.Type.BLOCK) {
                     BlockPos blockPos = rayTraceResult.getBlockPos();
                     IBlockState block = sender.getEntityWorld().getBlockState(blockPos);                    
                     
@@ -106,41 +106,41 @@ public class Command implements ICommand {
                     String blockName = block.getBlock().getRegistryName() + (meta == 0 ? "" : ":" + meta);
                     String toCopy = "\"" + blockName + "\"";
                     
-                    sender.addChatMessage(new ChatComponentText("Block \u00A72" + blockName + " \u00A7rat \u00A79[" + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ() + "]\u00A7r"));
+                    sender.addChatMessage(new TextComponentString("Block \u00A72" + blockName + " \u00A7rat \u00A79[" + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ() + "]\u00A7r"));
                     
                     // adds the oreDict names if it has some
                     try {
                         
                         List<String> oreDictNames = GenericHelper.getOreDictOfItem(new ItemStack(block.getBlock(), 1, block.getBlock().getMetaFromState(block)));
                         if(oreDictNames.size() > 0) {
-                            sender.addChatMessage(new ChatComponentText("\u00A73OreDict Entries:"));
+                            sender.addChatMessage(new TextComponentString("\u00A73OreDict Entries:"));
                             
 							for (String oreName : oreDictNames) {
 								toCopy += ", \"ore:" + oreName + "\"";
-								sender.addChatMessage(new ChatComponentText(" \u00A7e- \u00A7b" + oreName));
+								sender.addChatMessage(new TextComponentString(" \u00A7e- \u00A7b" + oreName));
 							}
                         } else {
-                            sender.addChatMessage(new ChatComponentText("\u00A73No OreDict Entries"));
+                            sender.addChatMessage(new TextComponentString("\u00A73No OreDict Entries"));
                         }
                         // catches if it couldn't create a valid ItemStack for the Block
                     } catch(IllegalArgumentException e) {
-                        sender.addChatMessage(new ChatComponentText("\u00A73No OreDict Entries"));
+                        sender.addChatMessage(new TextComponentString("\u00A73No OreDict Entries"));
                     }
                     
                     ClipboardHelper.copyStringPlayer(player, toCopy);
-                    sender.addChatMessage(new ChatComponentText("Copied [\u00A76" + toCopy + "\u00A7r] to the clipboard"));
+                    sender.addChatMessage(new TextComponentString("Copied [\u00A76" + toCopy + "\u00A7r] to the clipboard"));
                     
                 } else {
-                    sender.addChatMessage(new ChatComponentText("\u00A74Please hold an Item in your hand or look at a Block."));
+                    sender.addChatMessage(new TextComponentString("\u00A74Please hold an Item in your hand or look at a Block."));
                 }
             }
         } else {
-            sender.addChatMessage(new ChatComponentText("This command can only be casted by a player inGame"));
+            sender.addChatMessage(new TextComponentString("This command can only be casted by a player inGame"));
         }
 	}
 
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender sender) {
+	public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
         if(sender instanceof EntityPlayer) {
             return true;
         }
@@ -148,7 +148,8 @@ public class Command implements ICommand {
 	}
 
 	@Override
-	public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args,
+			BlockPos pos) {
 		return null;
 	}
 

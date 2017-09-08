@@ -7,7 +7,7 @@ import java.awt.datatransfer.StringSelection;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 /**
  * @author BloodWorkXGaming, LakMoore
@@ -27,9 +27,9 @@ public class ClipboardHelper {
     	
         if(sender instanceof EntityPlayer) {
             copyStringPlayer((EntityPlayer) sender, copyMessage.toString());
-            sender.addChatMessage(new ChatComponentText("Copied [\u00A76" + wholeMessage.toString() + "\u00A7r] to the clipboard"));
+            sender.addChatMessage(new TextComponentString("Copied [\u00A76" + wholeMessage.toString() + "\u00A7r] to the clipboard"));
         } else {
-            sender.addChatMessage(new ChatComponentText("This command can only be executed as a Player (InGame)"));
+            sender.addChatMessage(new TextComponentString("This command can only be executed as a Player (InGame)"));
         }
 
         
@@ -55,9 +55,9 @@ public class ClipboardHelper {
         
         if(sender.getCommandSenderEntity() instanceof EntityPlayer) {
             copyStringPlayer((EntityPlayer) sender.getCommandSenderEntity(), message.toString());
-            sender.addChatMessage(new ChatComponentText("Copied [\u00A76" + message.toString() + "\u00A7r] to the clipboard"));
+            sender.addChatMessage(new TextComponentString("Copied [\u00A76" + message.toString() + "\u00A7r] to the clipboard"));
         } else {
-            sender.addChatMessage(new ChatComponentText("This command can only be executed as a Player (InGame)"));
+            sender.addChatMessage(new TextComponentString("This command can only be executed as a Player (InGame)"));
         }
     }
     

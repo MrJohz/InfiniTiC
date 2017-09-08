@@ -7,10 +7,11 @@ import com.google.common.base.Function;
 import me.johz.infinitic.lib.data.MaterialData;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.IBakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.Attributes;
 import net.minecraftforge.client.model.IModel;
@@ -36,7 +37,7 @@ public class InfiniEvents {
 		    		model = new ModelFluid(mat.fluid);
 		    		baked = model.bake(model.getDefaultState(), Attributes.DEFAULT_BAKED_FORMAT, textureGetter);
 		    		location = new ModelResourceLocation(InfiniTiC.MODID + ":fluid_block", mat.fluid.getName());
-		    		event.modelRegistry.putObject(location, baked);	    			
+		    		event.getModelRegistry().putObject(location, baked);	    			
 	    		}
 	    		else {
 	    			InfiniTiC.LOGGER.error("Invalid Material found.  Unable to add the fluid model!" + mat.json.name);
@@ -46,15 +47,15 @@ public class InfiniEvents {
 	
 	@SubscribeEvent
 	public void materialTooltip(ItemTooltipEvent event) {
-		Block block = Block.getBlockFromItem(event.itemStack.getItem());
+		Block block = Block.getBlockFromItem(event.getItemStack().getItem());
 		if (block == null) {
 			return;
 		}
 		// check if the item belongs to a material
 		for (MaterialData material : InfiniTiC.MATERIALS) {
 			if (block.equals(material.block)) {
-				event.toolTip.add("");
-				event.toolTip.add(EnumChatFormatting.GRAY + "Fluid added by Infini-TiC");
+				event.getToolTip().add("");
+				event.getToolTip().add(TextFormatting.GRAY + "Fluid added by Infini-TiC");
 			}
 		}
 	}

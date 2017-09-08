@@ -12,7 +12,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 
@@ -30,10 +30,6 @@ repositories {
     maven {
         name 'DVS1 Maven FS'
         url 'http://dvs1.progwml6.com/files/maven'
-    }
-    maven {
-        name 'CB Maven FS'
-        url 'http://chickenbones.net/maven/'
     }
 }
 
@@ -107,8 +103,8 @@ if (artifact_version_override != 'NotUsed') {
 //version = "${config.minecraft_version}-${artifact_version}"
 
 minecraft {
-    mappings = 'stable_22'
-    version = config.minecraft_version + '-' + config.forge_version + '-' + config.minecraft_version
+    mappings = 'stable_26'
+    version = config.minecraft_version + '-' + config.forge_version // + '-' + config.minecraft_version
     if (file('../run').exists()) {
 	    runDir = '../run/eclipse'
     } else {

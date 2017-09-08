@@ -9,7 +9,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -34,7 +37,7 @@ import me.johz.infinitic.lib.data.MaterialJSON;
 import me.johz.infinitic.lib.helpers.GenericHelper;
 import me.johz.infinitic.lib.helpers.JsonConfigHelper;
 
-@Mod(modid=InfiniTiC.MODID, version=InfiniTiC.VERSION, name=InfiniTiC.NAME, acceptedMinecraftVersions="1.8.9",dependencies="required-after:tconstruct") 
+@Mod(modid=InfiniTiC.MODID, version=InfiniTiC.VERSION, name=InfiniTiC.NAME, acceptedMinecraftVersions="1.9.4",dependencies="required-after:tconstruct") 
 public class InfiniTiC {
 		
 	public static final String NAME = "Infini-TiC";
@@ -88,10 +91,12 @@ public class InfiniTiC {
 		FluidRegistry.registerFluid(fluid);
 		BlockMolten block = new BlockMolten(fluid);
 		block.setUnlocalizedName(InfiniTiC.MODID + "." + name);
-		block.setRegistryName(new ResourceLocation(InfiniTiC.MODID, name));
-		GameRegistry.registerBlock(block, InfiniTiC.MODID + ":" + name);
+		ResourceLocation regName = new ResourceLocation(InfiniTiC.MODID, name);
+		block.setRegistryName(regName);
+		GameRegistry.register(block);
+		Item item = new ItemBlock(block).setRegistryName(regName);
+		GameRegistry.register(item);
 
-		Item item = Item.getItemFromBlock(block);
 		InfiniFluidStateMapper mapper = new InfiniFluidStateMapper(fluid);
 		// item-model
 		ModelLoader.registerItemVariants(item);

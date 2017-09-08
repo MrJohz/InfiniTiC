@@ -1,9 +1,6 @@
 package me.johz.infinitic.lib.data;
 
-import java.util.HashMap;
-
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.common.registry.LanguageRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 import me.johz.infinitic.InfiniTiC;
@@ -16,7 +13,9 @@ import slimeknights.tconstruct.library.materials.HandleMaterialStats;
 import slimeknights.tconstruct.library.materials.HeadMaterialStats;
 import slimeknights.tconstruct.library.materials.Material;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -190,12 +189,18 @@ public class MaterialData {
 			if(json.fluidData.luminosity > 0) fluid.setLuminosity(json.fluidData.luminosity);			
 			fluid.setRarity(json.fluidData.getRarity());
 		}
-
-	    block = new BlockMolten(fluid);
+		
         name = "molten_" + name;
-	    block.setUnlocalizedName(InfiniTiC.MODID + "." + name);  //For localization
-	    block.setRegistryName(name);
-	    GameRegistry.registerBlock(block, name);
+		ResourceLocation regName = new ResourceLocation(InfiniTiC.MODID, name);
+	    block = new BlockMolten(fluid)
+		    .setUnlocalizedName(InfiniTiC.MODID + "." + name)  //For localization
+		    .setRegistryName(regName);
+	    GameRegistry.register(block);
+		GameRegistry.register(
+			new ItemBlock(block)
+				.setRegistryName(regName)
+		);
+
 		FluidRegistry.addBucketForFluid(fluid);
 		
 	}

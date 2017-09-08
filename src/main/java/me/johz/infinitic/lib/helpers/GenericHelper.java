@@ -9,8 +9,8 @@ import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class GenericHelper {
@@ -66,9 +66,9 @@ public class GenericHelper {
 		return names;
 	}
 
-	public static MovingObjectPosition getPlayerLookat(EntityPlayer player, double range) {
-		Vec3 eyes = player.getPositionEyes(1.0F);
-		return player.getEntityWorld().rayTraceBlocks(eyes, eyes.add(new Vec3(player.getLookVec().xCoord * range, player.getLookVec().yCoord * range, player.getLookVec().zCoord * range)));
+	public static RayTraceResult getPlayerLookat(EntityPlayer player, double range) {
+		Vec3d eyes = player.getPositionEyes(1.0F);
+		return player.getEntityWorld().rayTraceBlocks(eyes, eyes.add(new Vec3d(player.getLookVec().xCoord * range, player.getLookVec().yCoord * range, player.getLookVec().zCoord * range)));
 	}
 	
 }
