@@ -6,10 +6,10 @@ import me.johz.infinitic.lib.errors.JSONValidationException;
 public class LocalizationJSON implements IJson
 {
     
-    String locale;
-    String solid;
-    String liquid;
-    String bucket;
+	public String locale;
+	public String solid;
+	public String liquid;
+	public String bucket;
 
     @Override
     public void validate() throws JSONValidationException {
