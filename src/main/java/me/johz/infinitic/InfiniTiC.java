@@ -37,7 +37,7 @@ import me.johz.infinitic.lib.data.MaterialJSON;
 import me.johz.infinitic.lib.helpers.GenericHelper;
 import me.johz.infinitic.lib.helpers.JsonConfigHelper;
 
-@Mod(modid=InfiniTiC.MODID, version=InfiniTiC.VERSION, name=InfiniTiC.NAME, acceptedMinecraftVersions="1.9.4",dependencies="required-after:tconstruct") 
+@Mod(modid=InfiniTiC.MODID, version=InfiniTiC.VERSION, name=InfiniTiC.NAME, acceptedMinecraftVersions="1.10.2",dependencies="required-after:tconstruct") 
 public class InfiniTiC {
 		
 	public static final String NAME = "Infini-TiC";

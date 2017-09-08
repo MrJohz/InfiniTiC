@@ -30,17 +30,17 @@ public class Command implements ICommand {
 	}
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "infinitic";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender sender) {
+	public String getUsage(ICommandSender sender) {
 		return "/infinitic hand";
 	}
 
 	@Override
-	public List<String> getCommandAliases() {
+	public List<String> getAliases() {
 		ArrayList<String> aliases = new ArrayList<String>();
 		aliases.add("infini");
 		aliases.add("it");
@@ -51,8 +51,8 @@ public class Command implements ICommand {
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		
 		if (args.length < 1 || (!"hand".equalsIgnoreCase(args[0]))) {
-			sender.addChatMessage(new TextComponentString("Need to specify 'hand'."));
-			sender.addChatMessage(new TextComponentString(this.getCommandUsage(sender)));
+			sender.sendMessage(new TextComponentString("Need to specify 'hand'."));
+			sender.sendMessage(new TextComponentString(this.getUsage(sender)));
 			return;
 		}
 		
@@ -77,22 +77,22 @@ public class Command implements ICommand {
                         withNBT = ".withTag(" + nbt + ")";
                 }
 
-                sender.addChatMessage(new TextComponentString("Item \u00A72" + itemName + "\u00A7a" + withNBT));
+                sender.sendMessage(new TextComponentString("Item \u00A72" + itemName + "\u00A7a" + withNBT));
                 String toCopy = "\"" + itemName + "\"";
 
                 // adds the oredict names if it has some
                 if(oreDictNames.size() > 0) {
-                    sender.addChatMessage(new TextComponentString("\u00A73OreDict Entries:"));
+                    sender.sendMessage(new TextComponentString("\u00A73OreDict Entries:"));
                     for(String oreName : oreDictNames) {
-                        sender.addChatMessage(new TextComponentString(" \u00A7e- \u00A7b" + oreName));
+                        sender.sendMessage(new TextComponentString(" \u00A7e- \u00A7b" + oreName));
                         toCopy += ", \"ore:" + oreName + "\"";
                     }
                 } else {
-                    sender.addChatMessage(new TextComponentString("\u00A73No OreDict Entries"));
+                    sender.sendMessage(new TextComponentString("\u00A73No OreDict Entries"));
                 }
 
                 ClipboardHelper.copyStringPlayer(player, toCopy);
-                sender.addChatMessage(new TextComponentString("Copied [\u00A76" + toCopy + "\u00A7r] to the clipboard"));
+                sender.sendMessage(new TextComponentString("Copied [\u00A76" + toCopy + "\u00A7r] to the clipboard"));
                 
             } else {
                 // if hand is empty, tries to get oreDict of block
@@ -106,36 +106,36 @@ public class Command implements ICommand {
                     String blockName = block.getBlock().getRegistryName() + (meta == 0 ? "" : ":" + meta);
                     String toCopy = "\"" + blockName + "\"";
                     
-                    sender.addChatMessage(new TextComponentString("Block \u00A72" + blockName + " \u00A7rat \u00A79[" + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ() + "]\u00A7r"));
+                    sender.sendMessage(new TextComponentString("Block \u00A72" + blockName + " \u00A7rat \u00A79[" + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ() + "]\u00A7r"));
                     
                     // adds the oreDict names if it has some
                     try {
                         
                         List<String> oreDictNames = GenericHelper.getOreDictOfItem(new ItemStack(block.getBlock(), 1, block.getBlock().getMetaFromState(block)));
                         if(oreDictNames.size() > 0) {
-                            sender.addChatMessage(new TextComponentString("\u00A73OreDict Entries:"));
+                            sender.sendMessage(new TextComponentString("\u00A73OreDict Entries:"));
                             
 							for (String oreName : oreDictNames) {
 								toCopy += ", \"ore:" + oreName + "\"";
-								sender.addChatMessage(new TextComponentString(" \u00A7e- \u00A7b" + oreName));
+								sender.sendMessage(new TextComponentString(" \u00A7e- \u00A7b" + oreName));
 							}
                         } else {
-                            sender.addChatMessage(new TextComponentString("\u00A73No OreDict Entries"));
+                            sender.sendMessage(new TextComponentString("\u00A73No OreDict Entries"));
                         }
                         // catches if it couldn't create a valid ItemStack for the Block
                     } catch(IllegalArgumentException e) {
-                        sender.addChatMessage(new TextComponentString("\u00A73No OreDict Entries"));
+                        sender.sendMessage(new TextComponentString("\u00A73No OreDict Entries"));
                     }
                     
                     ClipboardHelper.copyStringPlayer(player, toCopy);
-                    sender.addChatMessage(new TextComponentString("Copied [\u00A76" + toCopy + "\u00A7r] to the clipboard"));
+                    sender.sendMessage(new TextComponentString("Copied [\u00A76" + toCopy + "\u00A7r] to the clipboard"));
                     
                 } else {
-                    sender.addChatMessage(new TextComponentString("\u00A74Please hold an Item in your hand or look at a Block."));
+                    sender.sendMessage(new TextComponentString("\u00A74Please hold an Item in your hand or look at a Block."));
                 }
             }
         } else {
-            sender.addChatMessage(new TextComponentString("This command can only be casted by a player inGame"));
+            sender.sendMessage(new TextComponentString("This command can only be casted by a player inGame"));
         }
 	}
 
@@ -148,8 +148,7 @@ public class Command implements ICommand {
 	}
 
 	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args,
-			BlockPos pos) {
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
 		return null;
 	}
 

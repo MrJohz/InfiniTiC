@@ -103,7 +103,7 @@ if (artifact_version_override != 'NotUsed') {
 //version = "${config.minecraft_version}-${artifact_version}"
 
 minecraft {
-    mappings = 'stable_26'
+    mappings = 'stable_29'
     version = config.minecraft_version + '-' + config.forge_version // + '-' + config.minecraft_version
     if (file('../run').exists()) {
 	    runDir = '../run/eclipse'
