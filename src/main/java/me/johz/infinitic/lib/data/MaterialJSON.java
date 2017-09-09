@@ -24,12 +24,20 @@ public class MaterialJSON implements IJson {
 	public ToolDataJSON toolData;
 	public FluidDataJSON fluidData = new FluidDataJSON();
 		
+	/**
+	 * If true then Tinkers will add the block of this material as
+	 * an option when crafting a Tool Forge
+	 */
 	public Boolean canCraftToolForge = false;
 
 	//Deprecated after MC 1.7.10
+	@Deprecated
 	public String renderore;
+	@Deprecated
 	public int renderoreMeta = 0;
+	@Deprecated
 	public String renderblock;
+	@Deprecated
 	public int renderblockMeta = 0;
 
 	@Override

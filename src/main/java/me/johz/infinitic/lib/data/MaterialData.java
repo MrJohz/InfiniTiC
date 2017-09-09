@@ -8,10 +8,17 @@ import me.johz.infinitic.client.model.InfiniFluidStateMapper;
 import me.johz.infinitic.lib.errors.JSONValidationException;
 import me.johz.infinitic.lib.helpers.GenericHelper;
 import net.minecraft.block.Block;
+import slimeknights.tconstruct.library.materials.ArrowShaftMaterialStats;
+import slimeknights.tconstruct.library.materials.BowMaterialStats;
+import slimeknights.tconstruct.library.materials.BowStringMaterialStats;
 import slimeknights.tconstruct.library.materials.ExtraMaterialStats;
+import slimeknights.tconstruct.library.materials.FletchingMaterialStats;
 import slimeknights.tconstruct.library.materials.HandleMaterialStats;
 import slimeknights.tconstruct.library.materials.HeadMaterialStats;
 import slimeknights.tconstruct.library.materials.Material;
+import slimeknights.tconstruct.library.materials.ProjectileMaterialStats;
+import slimeknights.tconstruct.library.modifiers.IModifier;
+import slimeknights.tconstruct.library.traits.ITrait;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -96,12 +103,13 @@ public class MaterialData {
 	    if (isValid)
 	    {
 		    if(integration != null) integration.integrateRecipes();
-		    
+
+		    addMaterialTraits();
+
 			if (json.hasGems()) {
 				TinkerRegistry.registerMelting("gem" + GenericHelper.capitalizeFirstLetter(json.name), fluid, Material.VALUE_Ingot);
-				TinkerRegistry.registerTableCasting(json.getGems()[0], TinkerSmeltery.castGem, fluid, Material.VALUE_Gem);				
+				TinkerRegistry.registerTableCasting(json.getGems()[0], TinkerSmeltery.castGem, fluid, Material.VALUE_Ingot);				
 			}
-
 	    }		
 	}
 
@@ -159,20 +167,74 @@ public class MaterialData {
 		//TODO: if no gear exists, make one???
 
 	}
+
+	private void addMaterialTraits() {
+		for (String traitId : json.toolData.traits) {
+			IModifier modifier = TinkerRegistry.getModifier(traitId);
+			if (modifier != null && modifier instanceof ITrait) {
+				material.addTrait((ITrait)modifier);
+			}
+		}
+	}
 	
 	private void addMaterialStats() {
 		
-	    TinkerRegistry.addMaterialStats(material,
-                new HeadMaterialStats(json.toolData.durability, json.toolData.miningspeed, json.toolData.attack, json.toolData.harvestLevel),
-                new HandleMaterialStats(json.toolData.handleModifier, json.toolData.durability));
+		//can we make heads out of this material?
+	    if(json.toolData.miningSpeed != 0 || json.toolData.attack != 0) {
+		    TinkerRegistry.addMaterialStats(material,
+	                new HeadMaterialStats(json.toolData.durability, json.toolData.miningSpeed, json.toolData.attack, json.toolData.harvestLevel)
+	                );
+	    }
 
+		//can we make handles out of this material?
+	    if(json.toolData.handleModifier != 0) {
+		    TinkerRegistry.addMaterialStats(material,
+	                new HandleMaterialStats(json.toolData.handleModifier, json.toolData.durability)
+	                );
+	    }
+
+	    //can we make bindings (etc.) out of this material?
 	    if(json.toolData.extraDurability != 0) {
 		    TinkerRegistry.addMaterialStats(material,
-	                new ExtraMaterialStats(json.toolData.extraDurability));
+	                new ExtraMaterialStats(json.toolData.extraDurability)
+	                );
 	    }
 	    
-	    //TODO: Tinker Bows don't appear to be implemented in MC 1.8.9!
+	    //can we make bow parts out of this material?
+	    if (json.toolData.drawSpeed != 0 || json.toolData.range != 0) {
+		    TinkerRegistry.addMaterialStats(material,
+			    	new BowMaterialStats(json.toolData.drawSpeed, json.toolData.range, json.toolData.bonusDamage)
+			    	);
+	    }
 
+	    //can we make arrow shafts out of this material?
+	    if (json.toolData.shaftModifier != 0) {
+		    TinkerRegistry.addMaterialStats(material,
+			    	new ArrowShaftMaterialStats(json.toolData.shaftModifier, json.toolData.bonusAmmo)
+			    	);
+	    }
+
+	    //can we make arrow fletchings out of this material?
+	    if (json.toolData.accuracy != 0 || json.toolData.fletchingModifier != 0) {
+		    TinkerRegistry.addMaterialStats(material,
+			    	new FletchingMaterialStats(json.toolData.accuracy, json.toolData.fletchingModifier)
+			    	);
+	    }
+
+	    //can we make bow strings out of this material?
+	    if (json.toolData.stringModifier != 0) {
+		    TinkerRegistry.addMaterialStats(material,
+			    	new BowStringMaterialStats(json.toolData.stringModifier)
+			    	);
+	    }
+	    
+	    //can we make projectiles (e.g. Shurikens) out of this material?
+	    if (json.toolData.projectiles) {
+		    TinkerRegistry.addMaterialStats(material,
+			    	new ProjectileMaterialStats()
+			    	);
+	    }
+	    
 	}
 	
 	private void makeFluid() {

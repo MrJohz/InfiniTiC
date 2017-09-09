@@ -5,31 +5,71 @@ import me.johz.infinitic.lib.errors.JSONValidationException;
 import me.johz.infinitic.lib.helpers.GenericHelper;
 
 public class ToolDataJSON implements IJson {
-	
-	// Unique material id - not needed since MC 1.7.10
-	int ID = Integer.MIN_VALUE;
-	
+		
 	int harvestLevel;
 	int durability;
 	int extraDurability;
-	int miningspeed;
+	int miningSpeed;
 	int attack;
 	float handleModifier;
-	int reinforced;
-	float stonebound;
 	// You probably won't ever need this
 	String style;
-	// Three-part hex
+	// Four-part hex
 	String color;
 	
 	int temperature;
 	
-	//Bow things
-	int drawspeed;
+	//Bow Parts
+	float drawSpeed = 0.0f;
+	float range = 0.0f;
+	float bonusDamage = 0.0f;
+	//Arrow Shafts
+	float shaftModifier = 0.0f;
+	int bonusAmmo = 0;
+	//Fletchings
+	float accuracy = 0.0f;	
+	float fletchingModifier = 0.0f;
+	//Bow Strings
+	float stringModifier = 0.0f;
+	
+	//want to make throwing stars?
+	boolean projectiles = false;
+	
+	String[] traits = {};
+
+	//old, deprecated stats
+	/**
+	 *  @deprecated Unique material id - not needed since MC 1.7.10
+	 */
+	@Deprecated
+	int ID = Integer.MIN_VALUE;
+	/**
+	 * @deprecated Reinforced is now a Trait
+	 */
+	@Deprecated
+	int reinforced = 0;
+	/**
+	 * @deprecated Stonebound is now a Trait
+	 */
+	@Deprecated
+	float stonebound = 0;
+	/**
+	 * @deprecated Use {@link #miningSpeed} instead
+	 */	
+	@Deprecated
+	int miningspeed;  //typo
+	/**
+	 * @deprecated Use {@link #drawSpeed} instead
+	 */	
+	@Deprecated
+	float drawspeed;  //typo
+	@Deprecated
 	float projectilespeed;
-	float projectilemass;
+	@Deprecated
+	float projectilemass; 
+	@Deprecated
 	float projectilefragility;
-	    
+
 	@Override
 	public void validate() throws JSONValidationException {		
 		try {
@@ -42,8 +82,21 @@ public class ToolDataJSON implements IJson {
 			InfiniTiC.LOGGER.info("Material ID is not needed and will be ignored!");
 		}
 		
-		if(drawspeed > 0 || projectilespeed > 0 || projectilemass > 0 || projectilefragility > 0) {
-			InfiniTiC.LOGGER.info("There are no Tinker's Bows in this version.  Bow stats will be ignored!");
+		if (reinforced != 0) {
+			InfiniTiC.LOGGER.info("\"reinforced\" stat is no longer used and will be ignored!");
+		}
+
+		if (stonebound != 0) {
+			InfiniTiC.LOGGER.info("\"stonebound\" stat is no longer used and will be ignored!");
+		}
+
+		if (drawspeed != 0) {
+			InfiniTiC.LOGGER.info("\"drawspeed\" stat has been replaced with \"drawSpeed\"!");
+			if (drawSpeed == 0) drawSpeed = drawspeed;
+		}
+
+		if (projectilespeed != 0 || projectilemass != 0 || projectilefragility != 0) {
+			InfiniTiC.LOGGER.info("Projectile stats are not implemented and will be ignored!");
 		}
 
 	}
