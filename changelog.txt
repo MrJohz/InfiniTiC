@@ -1,5 +1,13 @@
+v0.1.7
+Updated to MC version 1.10.2
+Added "/infinitic traits" command.
+Added traits array to JSON.
+Added Bow stats to JSON.
+Added Projectile option to JSON.
+Re-named some inconsistent fields in JSON.
+
 v0.1.6
-Only available for MC 1.8.9
+Available for MC versions 1.8.9 and 1.9.4
 Updated to MC 1.8.9, Forge 11.15.1.2318, TConstruct 2.2.1, Java 1.8
 NEW JSON format. Should be backward compatible!!??  Check the wiki for an example.
 Added some default values, which should make the JSON parsing a little more forgiving.
