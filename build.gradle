@@ -42,12 +42,18 @@ configFile.withReader {
     def prop = new Properties()
     prop.load(it)
     project.ext.config = new ConfigSlurper().parse prop
+
+	def numbersFile = new File("buildno.properties")	
+	def numbers = new Properties();
+	numbers.load(numbersFile.newDataInputStream())
+	project.ext.buildNumbers = new ConfigSlurper().parse(numbers)
+
 }
 
 sourceCompatibility = config.java_version
 targetCompatibility = config.java_version    
 
-version = "${config.minecraft_version}-${config.mod_version}.${config.build_number}"
+version = "${config.minecraft_version}-${buildNumbers.mod_version}.${buildNumbers.build_number}"
 group = 'infinitic'
 archivesBaseName = 'Infini-TiC'
 
@@ -137,9 +143,9 @@ processResources
 }
 
 task incrementBuildNumber(dependsOn: 'reobfJar') {
-    config.build_number = (config.build_number.toString().toInteger()) + 1
-    configFile.withWriter {
-        config.toProperties().store(it, "")
+    buildNumbers.build_number = (buildNumbers.build_number.toString().toInteger()) + 1
+    numbersFile.withWriter {
+        buildNumbers.toProperties().store(it, "")
     }
 }
 
@@ -178,7 +184,7 @@ curseforge {
 		addGameVersion "${config.minecraft_version}"
 
 		mainArtifact(jar) {
-			displayName = "InfiniTiC-${config.minecraft_version}-${config.mod_version}.${config.build_number}"
+			displayName = "InfiniTiC-${config.minecraft_version}-${buildNumbers.mod_version}.${buildNumbers.build_number}"
 			relations {
 		        requiredLibrary 'tinkers-construct' // Tinkers Construct is required
 		        requiredLibrary 'mantle' // Mantle is required
