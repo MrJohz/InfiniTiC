@@ -37,12 +37,20 @@ import me.johz.infinitic.lib.data.MaterialJSON;
 import me.johz.infinitic.lib.helpers.GenericHelper;
 import me.johz.infinitic.lib.helpers.JsonConfigHelper;
 
-@Mod(modid=InfiniTiC.MODID, version=InfiniTiC.VERSION, name=InfiniTiC.NAME, acceptedMinecraftVersions="1.10.2",dependencies="required-after:tconstruct") 
+@Mod(
+	modid=InfiniTiC.MODID, 
+	version=InfiniTiC.VERSION, 
+	name=InfiniTiC.NAME, 
+	acceptedMinecraftVersions="1.11.2",
+	dependencies="required-after:tconstruct",
+	updateJSON=InfiniTiC.UPDATE_URL
+	) 
 public class InfiniTiC {
 		
 	public static final String NAME = "Infini-TiC";
     public static final String MODID = "infinitic";
     public static final String VERSION = "${MCVERSION}-${MODVERSION}";
+    public static final String UPDATE_URL = "https://github.com/LakMoore/InfiniTiC/blob/master/version/update.json";
     
     public static Logger LOGGER;
     public static File CONFIGDIR;

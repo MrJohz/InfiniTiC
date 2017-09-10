@@ -1,3 +1,4 @@
+import groovy.json.*
 
 buildscript {
     repositories {
@@ -46,7 +47,7 @@ configFile.withReader {
 sourceCompatibility = config.java_version
 targetCompatibility = config.java_version    
 
-version = "${config.minecraft_version}-${config.mod_version}"
+version = "${config.minecraft_version}-${config.mod_version}.${config.build_number}"
 group = 'infinitic'
 archivesBaseName = 'Infini-TiC'
 
@@ -103,7 +104,7 @@ if (artifact_version_override != 'NotUsed') {
 //version = "${config.minecraft_version}-${artifact_version}"
 
 minecraft {
-    mappings = 'snapshot-20170612'
+    mappings = 'snapshot_20170612'
     version = config.minecraft_version + '-' + config.forge_version // + '-' + config.minecraft_version
     if (file('../run').exists()) {
 	    runDir = '../run/eclipse'
@@ -111,7 +112,7 @@ minecraft {
 	    runDir = 'eclipse'
     }
 
-	replace '${MODVERSION}', config.mod_version
+	replace '${MODVERSION}', config.mod_version + '.' + config.build_number
 	replace '${MCVERSION}', config.minecraft_version
 
 }
@@ -135,6 +136,12 @@ processResources
     }
 }
 
+task incrementBuildNumber(dependsOn: 'reobfJar') {
+    config.build_number = (config.build_number.toString().toInteger()) + 1
+    configFile.withWriter {
+        config.toProperties().store(it, "")
+    }
+}
 
 // Create deobf dev jars
 task deobfJar(type: Jar) {
@@ -147,6 +154,22 @@ artifacts {
 }
 
 curseforge {
+
+    def updateJsonFile = file('version/update.json')
+    def updateJson = new JsonSlurper().parse(updateJsonFile) as Map
+	
+	// Ensure there is a section for this MC version
+	updateJson.get("${minecraft.version}" as String, [:])
+
+    // Add to version section
+    updateJson."${minecraft.version}"."${version}" = "See https://github.com/LakMoore/InfiniTiC/blob/master/changelog.txt"
+
+    // Update promos
+    updateJson.promos."${minecraft.version}-latest" = "${version}"
+    updateJson.promos."${minecraft.version}-recommended" = "${version}"
+
+    updateJsonFile.write(JsonOutput.prettyPrint(JsonOutput.toJson(updateJson)))
+
 	apiKey = project.curseForgeApiKey
 	project {
 		id = '247823'

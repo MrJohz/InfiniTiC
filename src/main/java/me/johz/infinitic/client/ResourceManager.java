@@ -19,8 +19,8 @@ public class ResourceManager implements IResourceManagerReloadListener {
 		for (MaterialData mat : InfiniTiC.MATERIALS) {
 			if (mat.json == null) continue;
 			for (LocalizationJSON locale : mat.json.localizations) {
-				if (locale.locale
-						.equals(Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode())) {
+				if (locale.locale.toLowerCase()
+						.equals(Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode().toLowerCase())) {
 					data += "material." + mat.json.name.toLowerCase() + ".name=" + locale.solid + "\n";
 					data += "fluid.infinitic." + mat.json.name.toLowerCase() + ".name=" + locale.liquid + "\n";
 

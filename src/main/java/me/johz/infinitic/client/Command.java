@@ -19,8 +19,6 @@ import slimeknights.tconstruct.library.TinkerRegistry;
 import slimeknights.tconstruct.library.modifiers.IModifier;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierTrait;
-import slimeknights.tconstruct.library.traits.ITrait;
-import slimeknights.tconstruct.tools.TinkerTraits;
 
 /**
  * Bulk of this class was taken from CraftTweaker where the Authors were listed as below

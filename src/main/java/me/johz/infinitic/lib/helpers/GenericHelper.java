@@ -68,7 +68,7 @@ public class GenericHelper {
 
 	public static RayTraceResult getPlayerLookat(EntityPlayer player, double range) {
 		Vec3d eyes = player.getPositionEyes(1.0F);
-		return player.getEntityWorld().rayTraceBlocks(eyes, eyes.add(new Vec3d(player.getLookVec().xCoord * range, player.getLookVec().yCoord * range, player.getLookVec().zCoord * range)));
+		return player.getEntityWorld().rayTraceBlocks(eyes, eyes.add(new Vec3d(player.getLookVec().x * range, player.getLookVec().y * range, player.getLookVec().z * range)));
 	}
 	
 }
