@@ -161,7 +161,7 @@ artifacts {
 
 curseforge {
 
-    def updateJsonFile = file('version/update.json')
+    def updateJsonFile = file('~/Dropbox/MinecraftModFiles/versions/infinitic.json')
     def updateJson = new JsonSlurper().parse(updateJsonFile) as Map
 	
 	// Ensure there is a section for this MC version

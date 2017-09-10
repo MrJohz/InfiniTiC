@@ -50,7 +50,7 @@ public class InfiniTiC {
 	public static final String NAME = "Infini-TiC";
     public static final String MODID = "infinitic";
     public static final String VERSION = "${MCVERSION}-${MODVERSION}";
-    public static final String UPDATE_URL = "https://github.com/LakMoore/InfiniTiC/blob/master/version/update.json";
+    public static final String UPDATE_URL = "https://www.dropbox.com/s/svrrpxsmyeqku09/infinitic.json?dl=1";
     
     public static Logger LOGGER;
     public static File CONFIGDIR;
