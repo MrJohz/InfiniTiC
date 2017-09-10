@@ -178,7 +178,7 @@ curseforge {
 		addGameVersion "${config.minecraft_version}"
 
 		mainArtifact(jar) {
-			displayName = "InfiniTiC-${config.minecraft_version}-${config.mod_version}"
+			displayName = "InfiniTiC-${config.minecraft_version}-${config.mod_version}.${config.build_number}"
 			relations {
 		        requiredLibrary 'tinkers-construct' // Tinkers Construct is required
 		        requiredLibrary 'mantle' // Mantle is required

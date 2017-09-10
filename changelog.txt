@@ -1,3 +1,8 @@
+v0.1.28
+Updated to MC version 1.11.2
+New auto build numbers... publishes may skip numbers now.
+Added Forge's update tracking system.
+
 v0.1.7
 Updated to MC version 1.10.2
 Added "/infinitic traits" command.
