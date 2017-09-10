@@ -45,9 +45,7 @@ usernamecache.json
 gradle.properties
 
 mods/CoFHCore-[1.7.10]3.1.3-327.jar
-
-mods/CoFHCore-[1.7.10]3.1.3-327.jar
 conf
 *.launch
 buildno.properties
-version
+/version/
