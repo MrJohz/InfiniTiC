@@ -2,10 +2,7 @@ package me.johz.infinitic.lib.helpers;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.logging.log4j.Level;
-
 import me.johz.infinitic.InfiniTiC;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -30,8 +27,6 @@ public class NameConversionHelper {
 			if (validate(name)) 
 			{
 				parse(name);
-				InfiniTiC.LOGGER.log(Level.INFO, InfiniTiC.MODID + ": Parsed an item [" + name + "]: " + modid + ":" + itemname + ":" 
-						+ (metadata == OreDictionary.WILDCARD_VALUE ? "*" : metadata));
 			}
 		}
 
@@ -161,7 +156,7 @@ public class NameConversionHelper {
 		} else {
 			List<ItemStack> l = new ArrayList<ItemStack>();
 			ItemStack i = getItem(name);
-			if (i.getItem() == null)
+			if (i.isEmpty())
 			{
 				InfiniTiC.LOGGER.warn("Unable to find a material named " + item.itemname);
 			}

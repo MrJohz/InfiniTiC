@@ -134,13 +134,13 @@ public class MaterialJSON implements IJson {
 	@Override
 	public void validate() throws JSONValidationException {
 		if (name == null) {
-			throw new JSONValidationException("Field 'name' is required and not present");
+			throw new JSONValidationException(name + ": Field 'name' is required and not present");
 		} else if (toolData == null) {
-			throw new JSONValidationException("Field 'toolData' is required and not present");
+			throw new JSONValidationException(name + ": Field 'toolData' is required and not present");
 		}
 		
 		if(renderore != null || renderoreMeta > 0 || renderblock != null || renderblockMeta > 0) {
-			InfiniTiC.LOGGER.info("renderore and renderblock are not needed and will be ignored!");
+			InfiniTiC.LOGGER.info(name + ": renderore and renderblock are not needed and will be ignored!");
 		}
 	}
 }
