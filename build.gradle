@@ -13,7 +13,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 
@@ -37,17 +37,17 @@ repositories {
 // Define properties file
 ext.configFile = file "build.properties"
 
+def numbersFile = new File("buildno.properties")	
+
 configFile.withReader {
     // Load config.  It shall from now be referenced as simply config or project.config
     def prop = new Properties()
     prop.load(it)
     project.ext.config = new ConfigSlurper().parse prop
 
-	def numbersFile = new File("buildno.properties")	
 	def numbers = new Properties();
 	numbers.load(numbersFile.newDataInputStream())
 	project.ext.buildNumbers = new ConfigSlurper().parse(numbers)
-
 }
 
 sourceCompatibility = config.java_version
@@ -110,7 +110,7 @@ if (artifact_version_override != 'NotUsed') {
 //version = "${config.minecraft_version}-${artifact_version}"
 
 minecraft {
-    mappings = 'snapshot_20170612'
+    mappings = config.forge_mappings
     version = config.minecraft_version + '-' + config.forge_version // + '-' + config.minecraft_version
     if (file('../run').exists()) {
 	    runDir = '../run/eclipse'
@@ -118,7 +118,7 @@ minecraft {
 	    runDir = 'eclipse'
     }
 
-	replace '${MODVERSION}', config.mod_version + '.' + config.build_number
+	replace '${MODVERSION}', buildNumbers.mod_version + '.' + buildNumbers.build_number
 	replace '${MCVERSION}', config.minecraft_version
 
 }
@@ -161,20 +161,22 @@ artifacts {
 
 curseforge {
 
-    def updateJsonFile = file('~/Dropbox/MinecraftModFiles/versions/infinitic.json')
-    def updateJson = new JsonSlurper().parse(updateJsonFile) as Map
+    def updateJsonFile = file(System.getProperty("user.home") + '/Dropbox/MinecraftModFiles/versions/infinitic.json')
+    if (updateJsonFile.exists()) {
+	    def updateJson = new JsonSlurper().parse(updateJsonFile) as Map
+		
+		// Ensure there is a section for this MC version
+		updateJson.get("${minecraft.version}" as String, [:])
 	
-	// Ensure there is a section for this MC version
-	updateJson.get("${minecraft.version}" as String, [:])
-
-    // Add to version section
-    updateJson."${minecraft.version}"."${version}" = "See https://github.com/LakMoore/InfiniTiC/blob/master/changelog.txt"
-
-    // Update promos
-    updateJson.promos."${minecraft.version}-latest" = "${version}"
-    updateJson.promos."${minecraft.version}-recommended" = "${version}"
-
-    updateJsonFile.write(JsonOutput.prettyPrint(JsonOutput.toJson(updateJson)))
+	    // Add to version section
+	    updateJson."${minecraft.version}"."${version}" = "See https://github.com/LakMoore/InfiniTiC/blob/master/changelog.txt"
+	
+	    // Update promos
+	    updateJson.promos."${minecraft.version}-latest" = "${version}"
+	    updateJson.promos."${minecraft.version}-recommended" = "${version}"
+	
+	    updateJsonFile.write(JsonOutput.prettyPrint(JsonOutput.toJson(updateJson)))
+    }
 
 	apiKey = project.curseForgeApiKey
 	project {

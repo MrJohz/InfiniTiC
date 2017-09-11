@@ -26,7 +26,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import slimeknights.tconstruct.library.fluid.FluidMolten;
 import slimeknights.tconstruct.smeltery.block.BlockMolten;
 import me.johz.infinitic.client.Command;
@@ -41,7 +41,7 @@ import me.johz.infinitic.lib.helpers.JsonConfigHelper;
 	modid=InfiniTiC.MODID, 
 	version=InfiniTiC.VERSION, 
 	name=InfiniTiC.NAME, 
-	acceptedMinecraftVersions="1.11.2",
+	acceptedMinecraftVersions="1.12",
 	dependencies="required-after:tconstruct",
 	updateJSON=InfiniTiC.UPDATE_URL
 	) 
@@ -101,9 +101,9 @@ public class InfiniTiC {
 		block.setUnlocalizedName(InfiniTiC.MODID + "." + name);
 		ResourceLocation regName = new ResourceLocation(InfiniTiC.MODID, name);
 		block.setRegistryName(regName);
-		GameRegistry.register(block);
+		ForgeRegistries.BLOCKS.register(block);
 		Item item = new ItemBlock(block).setRegistryName(regName);
-		GameRegistry.register(item);
+		ForgeRegistries.ITEMS.register(item);
 
 		InfiniFluidStateMapper mapper = new InfiniFluidStateMapper(fluid);
 		// item-model
@@ -121,7 +121,11 @@ public class InfiniTiC {
 	}
     
     @EventHandler
-    public void postInit(FMLPostInitializationEvent e) { }
+    public void postInit(FMLPostInitializationEvent e) { 
+		for (MaterialData mat : MATERIALS) {
+			mat.postInit(e.getSide());
+		}
+    }
     
     @EventHandler
     public void serverLoad(FMLServerStartingEvent event) {

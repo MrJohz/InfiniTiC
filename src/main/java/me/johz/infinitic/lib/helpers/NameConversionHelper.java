@@ -54,7 +54,7 @@ public class NameConversionHelper {
 			
 			if (pieces.length == 2) 
 			{   
-				if (NumberUtils.isNumber(pieces[1])) 
+				if (NumberUtils.isCreatable(pieces[1])) 
 				{   //e.g. "stone:2"
 					modid = "minecraft";
 					itemname = pieces[0];
@@ -90,7 +90,7 @@ public class NameConversionHelper {
 				metadata = OreDictionary.WILDCARD_VALUE;
 				piecesLeft--;
 			} 
-			else if (NumberUtils.isNumber(pieces[piecesLeft])) 
+			else if (NumberUtils.isCreatable(pieces[piecesLeft])) 
 			{
 				metadata = Integer.parseInt(pieces[piecesLeft]);
 				piecesLeft--;

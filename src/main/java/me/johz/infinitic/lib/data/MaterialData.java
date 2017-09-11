@@ -1,6 +1,6 @@
 package me.johz.infinitic.lib.data;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 import me.johz.infinitic.InfiniTiC;
@@ -75,7 +75,8 @@ public class MaterialData {
 	    		addToOreDict();
 	    		makeMaterial();
 	        makeFluid();
-	    		integrateMaterial();
+	    		integrateMaterial();	
+	    		if(integration != null) integration.preInit();
 
 	    		if(side == Side.CLIENT) {
 	    			
@@ -95,15 +96,12 @@ public class MaterialData {
 			}
 
 	    		addMaterialStats();
-	        
 	    }
 	}
 
 	public void init(Side side) {
 	    if (isValid)
 	    {
-		    if(integration != null) integration.integrateRecipes();
-
 		    addMaterialTraits();
 
 			if (json.hasGems()) {
@@ -111,6 +109,13 @@ public class MaterialData {
 				TinkerRegistry.registerTableCasting(json.getGems()[0], TinkerSmeltery.castGem, fluid, Material.VALUE_Ingot);				
 			}
 	    }		
+	}
+	
+	public void postInit(Side side) {
+	    if (isValid)
+	    {
+		    if(integration != null) integration.integrate();	    	
+	    }
 	}
 
 	private void addToOreDict() {
@@ -140,7 +145,6 @@ public class MaterialData {
 		if(json.canCraftToolForge) {			
 			integration.toolforge();
 		}
-		integration.integrate();
 	}
 
 	private void makeMaterial() {
@@ -257,8 +261,8 @@ public class MaterialData {
 	    block = new BlockMolten(fluid)
 		    .setUnlocalizedName(InfiniTiC.MODID + "." + name)  //For localization
 		    .setRegistryName(regName);
-	    GameRegistry.register(block);
-		GameRegistry.register(
+	    ForgeRegistries.BLOCKS.register(block);
+	    ForgeRegistries.ITEMS.register(
 			new ItemBlock(block)
 				.setRegistryName(regName)
 		);

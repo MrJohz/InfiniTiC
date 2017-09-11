@@ -3,6 +3,7 @@ package me.johz.infinitic.lib.helpers;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 
 import org.apache.commons.io.IOUtils;
@@ -36,7 +37,7 @@ public class JsonConfigHelper {
 		MaterialJSON m;
 		
 		try {
-		m = gson.fromJson(IOUtils.toString(s), MaterialJSON.class);
+		m = gson.fromJson(IOUtils.toString(s, Charset.defaultCharset()), MaterialJSON.class);
 		} catch (IOException e) {
 			return null;
 		} catch (JsonSyntaxException e) {
