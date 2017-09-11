@@ -36,6 +36,7 @@ repositories {
 
 // Define properties file
 ext.configFile = file "build.properties"
+def numbersFile = new File("buildno.properties")	
 
 def numbersFile = new File("buildno.properties")	
 
@@ -162,6 +163,7 @@ artifacts {
 curseforge {
 
     def updateJsonFile = file(System.getProperty("user.home") + '/Dropbox/MinecraftModFiles/versions/infinitic.json')
+
     if (updateJsonFile.exists()) {
 	    def updateJson = new JsonSlurper().parse(updateJsonFile) as Map
 		
