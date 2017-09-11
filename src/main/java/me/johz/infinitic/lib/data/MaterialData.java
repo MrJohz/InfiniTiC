@@ -149,7 +149,14 @@ public class MaterialData {
 
 	private void makeMaterial() {
 		material = new Material(json.name, json.getTextColorInt());
-        material.setCraftable(false).setCastable(true);
+		//if there is no fluid then we can only use the part builder
+		if (fluid == null) {
+	        material.setCraftable(true).setCastable(false);			
+		}
+		else {
+			//else we can only use the smeltry
+	        material.setCraftable(false).setCastable(true);
+		}
 
 	}
 
