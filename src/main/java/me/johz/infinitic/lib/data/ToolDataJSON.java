@@ -6,36 +6,45 @@ import me.johz.infinitic.lib.helpers.GenericHelper;
 
 public class ToolDataJSON implements IJson {
 		
-	int harvestLevel;
-	int durability;
-	int extraDurability;
-	int miningSpeed;
-	int attack;
-	float handleModifier;
+	public int harvestLevel;
+	public int durability;
+	public int extraDurability;
+	public int handleDurability;
+	public float miningSpeed;
+	public float attack;
+	public float handleModifier;
 	// You probably won't ever need this
-	String style;
+	public String style;
 	// Four-part hex
 	String color;
 	
-	int temperature;
+	public int temperature;
 	
 	//Bow Parts
-	float drawSpeed = 0.0f;
-	float range = 0.0f;
-	float bonusDamage = 0.0f;
+	public float drawSpeed = 0.0f;
+	public float range = 0.0f;
+	public float bonusDamage = 0.0f;
 	//Arrow Shafts
-	float shaftModifier = 0.0f;
-	int bonusAmmo = 0;
+	public float shaftModifier = 0.0f;
+	public int bonusAmmo = 0;
 	//Fletchings
-	float accuracy = 0.0f;	
-	float fletchingModifier = 0.0f;
+	public float accuracy = 0.0f;	
+	public float fletchingModifier = 0.0f;
 	//Bow Strings
-	float stringModifier = 0.0f;
+	public float stringModifier = 0.0f;
 	
 	//want to make throwing stars?
-	boolean projectiles = false;
+	public boolean projectiles = false;
 	
-	String[] traits = {};
+	public String[] traits = {};
+	public String[] headTraits = {};
+	public String[] handleTraits = {};
+	public String[] extraTraits = {};
+	public String[] bowTraits = {};
+	public String[] stringTraits = {};
+	public String[] projectileTraits = {};
+	public String[] shaftTraits = {};
+	public String[] fletchingTraits = {};	  
 
 	//old, deprecated stats
 	/**
@@ -96,7 +105,7 @@ public class ToolDataJSON implements IJson {
 		}
 
 		if (projectilespeed != 0 || projectilemass != 0 || projectilefragility != 0) {
-			InfiniTiC.LOGGER.info("Projectile stats are not implemented and will be ignored!");
+			InfiniTiC.LOGGER.info("The JSON references the old Projectile stats, which will be ignored!");
 		}
 
 	}

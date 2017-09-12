@@ -141,13 +141,6 @@ processResources
     }
 }
 
-task incrementBuildNumber(dependsOn: 'reobfJar') {
-    buildNumbers.build_number = (buildNumbers.build_number.toString().toInteger()) + 1
-    numbersFile.withWriter {
-        buildNumbers.toProperties().store(it, "")
-    }
-}
-
 // Create deobf dev jars
 task deobfJar(type: Jar) {
     from sourceSets.main.output
@@ -191,7 +184,15 @@ curseforge {
 		        requiredLibrary 'tinkers-construct' // Tinkers Construct is required
 		        requiredLibrary 'mantle' // Mantle is required
         		}
-		}
-
+		}		
 	}
+
+    def cmd = "git tag -a v${buildNumbers.mod_version}.${buildNumbers.build_number} -m ''"
+    def proc = cmd.execute()
+    proc.waitFor()
+    
+    buildNumbers.build_number = (buildNumbers.build_number.toString().toInteger()) + 1
+    numbersFile.withWriter {
+        buildNumbers.toProperties().store(it, "")
+    }   
 }

@@ -3,6 +3,9 @@ package me.johz.infinitic.lib.data;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
+
+import java.util.ArrayList;
+
 import me.johz.infinitic.InfiniTiC;
 import me.johz.infinitic.client.model.InfiniFluidStateMapper;
 import me.johz.infinitic.lib.errors.JSONValidationException;
@@ -16,6 +19,7 @@ import slimeknights.tconstruct.library.materials.FletchingMaterialStats;
 import slimeknights.tconstruct.library.materials.HandleMaterialStats;
 import slimeknights.tconstruct.library.materials.HeadMaterialStats;
 import slimeknights.tconstruct.library.materials.Material;
+import slimeknights.tconstruct.library.materials.MaterialTypes;
 import slimeknights.tconstruct.library.materials.ProjectileMaterialStats;
 import slimeknights.tconstruct.library.modifiers.IModifier;
 import slimeknights.tconstruct.library.traits.ITrait;
@@ -74,19 +78,22 @@ public class MaterialData {
 	    		getSolids();
 	    		addToOreDict();
 	    		makeMaterial();
-	        makeFluid();
-	    		integrateMaterial();	
-	    		if(integration != null) integration.preInit();
+	    		if(json.getMake("fluid")) {
+	    	        makeFluid();	    			
+	    		}
+	    		integrateMaterial();
 
 	    		if(side == Side.CLIENT) {
 	    			
-	    		    Item fluidItem = Item.getItemFromBlock(block);
-	    		    InfiniFluidStateMapper mapper = new InfiniFluidStateMapper(fluid);
-	    		    // item-model
-	    		    ModelLoader.registerItemVariants(fluidItem);
-	    		    ModelLoader.setCustomMeshDefinition(fluidItem, mapper);
-	    		    // block-model
-	    		    ModelLoader.setCustomStateMapper(block, mapper);
+	    			if (fluid != null) {
+		    		    Item fluidItem = Item.getItemFromBlock(block);
+		    		    InfiniFluidStateMapper mapper = new InfiniFluidStateMapper(fluid);
+		    		    // item-model
+		    		    ModelLoader.registerItemVariants(fluidItem);
+		    		    ModelLoader.setCustomMeshDefinition(fluidItem, mapper);
+		    		    // block-model
+		    		    ModelLoader.setCustomStateMapper(block, mapper);	    				
+	    			}
 
 			    int color = json.getToolColorInt();
 			    float shinyness = 0.25f;
@@ -104,7 +111,7 @@ public class MaterialData {
 	    {
 		    addMaterialTraits();
 
-			if (json.hasGems()) {
+			if (json.hasGems() && fluid != null) {
 				TinkerRegistry.registerMelting("gem" + GenericHelper.capitalizeFirstLetter(json.name), fluid, Material.VALUE_Ingot);
 				TinkerRegistry.registerTableCasting(json.getGems()[0], TinkerSmeltery.castGem, fluid, Material.VALUE_Ingot);				
 			}
@@ -130,6 +137,16 @@ public class MaterialData {
 	}
 
 	private void integrateMaterial() {
+		
+		//if there is no fluid then we can only use the part builder
+		if (fluid == null) {
+	        material.setCraftable(true).setCastable(false);			
+		}
+		else {
+			//else we can only use the smeltry
+	        material.setCraftable(false).setCastable(true);
+		}
+
 		String prefix = "ingot";
 		String suffix = GenericHelper.capitalizeFirstLetter(json.name);
 		ItemStack item = ingot;
@@ -150,15 +167,15 @@ public class MaterialData {
 	}
 
 	private void makeMaterial() {
-		material = new Material(json.name, json.getTextColorInt());
-		//if there is no fluid then we can only use the part builder
-		if (fluid == null) {
-	        material.setCraftable(true).setCastable(false);			
+		
+		material = TinkerRegistry.getMaterial(json.name);
+		if (material != Material.UNKNOWN) {
+			//There is already a material registered with this name
+			InfiniTiC.LOGGER.error("A material named " + json.name + " has already been registered by the " + TinkerRegistry.getTrace(material).getName() + " mod.  Values and stats will be over-ridden.  If this does not suit your purpose re-name your Infini-TiC material.  For example, it is not possible to remove a stat or trait registered by another mod!");
 		}
 		else {
-			//else we can only use the smeltry
-	        material.setCraftable(false).setCastable(true);
-		}
+			material = new Material(json.name, json.getTextColorInt());
+		}		
 
 	}
 
@@ -180,14 +197,37 @@ public class MaterialData {
 		//TODO: if no gear exists, make one???
 
 	}
+	
+	private void addTraitType(String[] traitsList, String dependency) {
+		ArrayList<String> traitsSoFar = new ArrayList<String>();
 
-	private void addMaterialTraits() {
-		for (String traitId : json.toolData.traits) {
+		for (String traitId : traitsList) {
 			IModifier modifier = TinkerRegistry.getModifier(traitId);
 			if (modifier != null && modifier instanceof ITrait) {
-				material.addTrait((ITrait)modifier);
+				if (traitsSoFar.contains(traitId)) {
+					InfiniTiC.LOGGER.error("Unable to add the same trait ( " + traitId + " ) twice to material " + dependency + " " + json.name);
+				}
+				else {
+					if (dependency == "")
+						material.addTrait((ITrait)modifier);
+					else
+						material.addTrait((ITrait)modifier, dependency);
+					traitsSoFar.add(traitId);					
+				}
 			}
 		}
+	}
+
+	private void addMaterialTraits() {			
+		addTraitType(json.toolData.headTraits, MaterialTypes.HEAD);
+		addTraitType(json.toolData.handleTraits, MaterialTypes.HANDLE);
+		addTraitType(json.toolData.extraTraits, MaterialTypes.EXTRA);
+		addTraitType(json.toolData.bowTraits, MaterialTypes.BOW);
+		addTraitType(json.toolData.stringTraits, MaterialTypes.BOWSTRING);
+		addTraitType(json.toolData.projectileTraits, MaterialTypes.PROJECTILE);
+		addTraitType(json.toolData.shaftTraits, MaterialTypes.SHAFT);
+		addTraitType(json.toolData.fletchingTraits, MaterialTypes.FLETCHING);
+		addTraitType(json.toolData.traits, "");
 	}
 	
 	private void addMaterialStats() {
@@ -202,7 +242,7 @@ public class MaterialData {
 		//can we make handles out of this material?
 	    if(json.toolData.handleModifier != 0) {
 		    TinkerRegistry.addMaterialStats(material,
-	                new HandleMaterialStats(json.toolData.handleModifier, json.toolData.durability)
+	                new HandleMaterialStats(json.toolData.handleModifier, json.toolData.handleDurability)
 	                );
 	    }
 
@@ -242,7 +282,9 @@ public class MaterialData {
 	    }
 	    
 	    //can we make projectiles (e.g. Shurikens) out of this material?
-	    if (json.toolData.projectiles) {
+	    //Tinkers auto-adds this stat to any material used to make tool heads
+	    //and trying to add it a second time throws an exception, so check before adding.
+	    if (json.toolData.projectiles && !material.hasStats(MaterialTypes.PROJECTILE)) {
 		    TinkerRegistry.addMaterialStats(material,
 			    	new ProjectileMaterialStats()
 			    	);

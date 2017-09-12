@@ -13,6 +13,7 @@ import net.minecraftforge.oredict.OreDictionary;
 public class MaterialJSON implements IJson {
 	
 	public String name;
+	public String[] make = {"fluid"};
 	
 	public String textColor = "#FFFFFFFF";
 	
@@ -29,7 +30,7 @@ public class MaterialJSON implements IJson {
 	 * an option when crafting a Tool Forge
 	 */
 	public Boolean canCraftToolForge = false;
-
+	
 	//Deprecated after MC 1.7.10
 	@Deprecated
 	public String renderore;
@@ -142,5 +143,14 @@ public class MaterialJSON implements IJson {
 		if(renderore != null || renderoreMeta > 0 || renderblock != null || renderblockMeta > 0) {
 			InfiniTiC.LOGGER.info(name + ": renderore and renderblock are not needed and will be ignored!");
 		}
+	}
+
+	public boolean getMake(String type) {
+		for (String s : make) {
+			if (s.equals(type)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

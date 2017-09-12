@@ -1,3 +1,19 @@
+Infini-TiC Changelog
+====================
+
+v0.1.37
+Built for MC version 1.11.2
+Added "make" property to JSON. "fluid" must be present in this list for the fluid to be made.  If no fluid exists then parts will be crafted using the part builder.
+Added individual traits to toolData section in JSON.
+Added separate "handleDurability" stat to JSON. [thanks to Smartaros for identifying the problem]
+Fixed a crash when adding Projectile ability to a material already registered with that ability.  Please note: Tinkers auto-registers any material that has a 'head' stat as a projectile and does not provide a way to remove it.
+If another mod registers a material, Infini-TiC will now get that material and overwrite the stats/properties set with those from the JSON (instead of making a conflicting material).  Similar to above, it is not expected that you will try to REMOVE a stat type.
+Material names in "Materials and You" will now show correctly [thanks to Isaac_The_Madd for identifying the problem]
+Changed miningSpeed and attack values from int to float, as they should have been.
+
+v0.1.36
+Updated to MC version 1.12
+
 v0.1.28
 Updated to MC version 1.11.2
 New auto build numbers... publishes may skip numbers now.
