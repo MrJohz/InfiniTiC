@@ -164,6 +164,7 @@ public class MaterialData {
 		if(json.canCraftToolForge) {			
 			integration.toolforge();
 		}
+		integration.preInit();
 	}
 
 	private void makeMaterial() {

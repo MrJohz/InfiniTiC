@@ -2,7 +2,6 @@ package me.johz.infinitic;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -12,8 +11,6 @@ import java.util.zip.ZipFile;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.client.resources.IResourceManagerReloadListener;
-import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
@@ -30,7 +27,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.tconstruct.library.fluid.FluidMolten;
 import slimeknights.tconstruct.smeltery.block.BlockMolten;
 import me.johz.infinitic.client.Command;
@@ -90,28 +86,8 @@ public class InfiniTiC {
 	    		mat.preInit(e.getSide());
 	    	}
 	    		    	
-	    	try {
-		    	resourceManager = new ResourceManager();
-		    	Field listenersField = SimpleReloadableResourceManager.class.getDeclaredField("reloadListeners");
-		    	listenersField.setAccessible(true);
-
-		    	@SuppressWarnings("unchecked")
-			ArrayList<IResourceManagerReloadListener> reloadListeners = 
-				(ArrayList<IResourceManagerReloadListener>)
-				listenersField.get((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()
-			);
-		    	int i = 0;
-		    	for (IResourceManagerReloadListener listener : reloadListeners) {
-		    		if (listener instanceof BookLoader) {
-		    			break;
-		    		}
-		    		i++;
-		    	}
-		    	reloadListeners.add(i, resourceManager);
-		} catch (Exception ex) {
-			InfiniTiC.LOGGER.error("Something went wrong while attemping to inject our resource re-loader just before the BookLoader.  Doing it the old-fasioned way!", ex);
-	        ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(resourceManager);
-		}
+	    	resourceManager = new ResourceManager();
+        ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(resourceManager);
 
 		//Event Handler... to handle all our events!
 		MinecraftForge.EVENT_BUS.register(new InfiniEvents());
