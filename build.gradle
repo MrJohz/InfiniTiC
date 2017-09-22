@@ -172,7 +172,7 @@ curseforge {
 }
 
 //call curseforge, then update the version file and increment the build number ready for next time
-task lakPublish(dependsOn: curseforge) {
+task lakPublish(dependsOn: 'curseforge') {
 	doLast {
 	    def updateJsonFile = file(System.getProperty("user.home") + '/Dropbox/MinecraftModFiles/versions/infinitic.json')
 	    if (updateJsonFile.exists()) {
