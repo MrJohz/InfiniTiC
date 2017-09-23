@@ -1,7 +1,6 @@
 package lakmoore.infinitic.lib.data;
 
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ import net.minecraftforge.fluids.FluidRegistry;
 import slimeknights.tconstruct.library.MaterialIntegration;
 import slimeknights.tconstruct.library.TinkerRegistry;
 import slimeknights.tconstruct.library.fluid.FluidMolten;
-import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.smeltery.block.BlockMolten;
 
 public class MaterialData {
@@ -71,18 +69,6 @@ public class MaterialData {
 	
 	public boolean isValid() {
 		return isValid;
-	}
-
-	public void init(Side side) {
-	    if (isValid)
-	    {
-		    addMaterialTraits();
-
-			if (json.hasGems() && fluid != null) {
-				TinkerRegistry.registerMelting("gem" + GenericHelper.capitalizeFirstLetter(json.name), fluid, Material.VALUE_Ingot);
-				TinkerRegistry.registerTableCasting(json.getGems()[0], TinkerSmeltery.castGem, fluid, Material.VALUE_Ingot);				
-			}
-	    }		
 	}
 
 	public void addToOreDict() {

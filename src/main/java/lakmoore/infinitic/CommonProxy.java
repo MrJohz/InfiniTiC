@@ -23,6 +23,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import slimeknights.tconstruct.library.TinkerRegistry;
 import slimeknights.tconstruct.library.events.MaterialEvent;
 import slimeknights.tconstruct.library.fluid.FluidMolten;
 import slimeknights.tconstruct.library.materials.ArrowShaftMaterialStats;
@@ -33,6 +34,8 @@ import slimeknights.tconstruct.library.materials.FletchingMaterialStats;
 import slimeknights.tconstruct.library.materials.HandleMaterialStats;
 import slimeknights.tconstruct.library.materials.HeadMaterialStats;
 import slimeknights.tconstruct.library.materials.IMaterialStats;
+import slimeknights.tconstruct.library.materials.Material;
+import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 import slimeknights.tconstruct.smeltery.block.BlockMolten;
 
 public class CommonProxy {
@@ -64,8 +67,16 @@ public class CommonProxy {
 	}
 
 	public void init(FMLInitializationEvent e) {
-		for (MaterialData mat : InfiniTiC.MATERIALS) {
-			mat.init(e.getSide());
+		for (MaterialData material : InfiniTiC.MATERIALS) {
+		    if (material.isValid())
+		    {
+		    		material.addMaterialTraits();
+
+				if (material.json.hasGems() && material.fluid != null) {
+					TinkerRegistry.registerMelting("gem" + GenericHelper.capitalizeFirstLetter(material.json.name), material.fluid, Material.VALUE_Ingot);
+					TinkerRegistry.registerTableCasting(material.json.getGems()[0], TinkerSmeltery.castGem, material.fluid, Material.VALUE_Ingot);				
+				}
+		    }		
 		}
 	}
 
