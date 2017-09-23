@@ -27,6 +27,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.relauncher.Side;
 import slimeknights.tconstruct.library.fluid.FluidMolten;
 import slimeknights.tconstruct.smeltery.block.BlockMolten;
 import me.johz.infinitic.client.Command;
@@ -85,9 +86,10 @@ public class InfiniTiC {
 	    	for (MaterialData mat: MATERIALS) {
 	    		mat.preInit(e.getSide());
 	    	}
-	    		    	
-	    	resourceManager = new ResourceManager();
-        ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(resourceManager);
+
+		if (e.getSide() == Side.CLIENT) {
+			((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(resourceManager);
+		}
 
 		//Event Handler... to handle all our events!
 		MinecraftForge.EVENT_BUS.register(new InfiniEvents());
