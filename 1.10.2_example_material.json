@@ -1,6 +1,8 @@
 {
 	"__name_comment": "An OreDictionary entry will be made (if one does not already exist) using this name.",
 	"name": "Diamond",
+	"__make_comment": "A list of materials to be made by the mod.  Currently only 'fluid' is valid, which will cause the fluid to be made and recipes to use the smeltery.  Use an empty array to NOT make a fluid, any parts defined below to be crafted using solid materials and the part builder instead.",
+	"make": ["fluid"],
 	"__color_comment": "The three colors are all in the format #AARRGGBB.  Tinkers will change fully transparent materials to fully opaque!",
 	"textColor": "#FF45ACA5",
 	"whitelist": {
@@ -37,10 +39,11 @@
 		"__extraDurability_comment": "Durability added (or removed!) by a binding (or similar) of this material.",
 		"extraDurability": -200,
 		"__miningSpeed_comment": "Usually between 1 and 10",
-		"miningSpeed": 7,
+		"miningSpeed": 7.0,
 		"__attack_comment": "Usually between 0 and 10 (in 1/2 hearts, so divide by 2 for damage in hearts)",
-		"attack": 6,
+		"attack": 6.0,
 		"handleModifier": 2,
+		"handleDurability": 200,
 		"color": "#FF45ACA5",
 		"temperature": 200,
 		"__projectiles_comment": "Set to true to enable building Shurikens",
@@ -56,9 +59,18 @@
 		"bonusAmmo": 0.0,
 		"__arrows_comment": "Following example stats are for feather fletchings.  Set to 0 to disable.",
 		"accuracy": 1.0,
-		"fletchingModifier": 1.0
-	        "__traits_comment": "Optional list of traits to be applied whenever possible to tools made of this material.  Use /infinitic traits in-game to see the full list!",
-	        "traits": ["sharp", "ecological", "stonebound"]
+		"fletchingModifier": 1.0,
+        "__traits_comment": "Optional list of traits to be applied generally to parts made of this material.  Use /infinitic traits in-game to see the full list!",
+        "traits": ["stonebound"],
+        "__specific_traits_comment": "Optional lists of traits to be applied to specific parts made of this material.  Use /infinitic traits in-game to see the full list!",
+        "headTraits": ["sharp"],
+        "handleTraits": ["sharp", "ecological"],
+        "extraTraits": ["ecological", "stonebound"],
+        "bowTraits": ["ecological"],
+        "stringTraits": [],
+        "projectileTraits": ["dense"],
+        "shaftTraits": [],
+        "fletchingTraits": []
 	},
 	"localizations": [{
 		"__comment": "The name of the material in various languages.  solid = the material and the tool.  liquid = the name of the fluid.  bucket = the name of the bucket.  To add more languages just add another object with the 4 elements",

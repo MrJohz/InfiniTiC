@@ -1,6 +1,6 @@
-package me.johz.infinitic.lib.data;
+package lakmoore.infinitic.lib.data;
 
-import me.johz.infinitic.lib.errors.JSONValidationException;
+import lakmoore.infinitic.lib.errors.JSONValidationException;
 
 public interface IJson {
 	

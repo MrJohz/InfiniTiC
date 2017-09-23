@@ -1,4 +1,4 @@
-package me.johz.infinitic.lib.helpers;
+package lakmoore.infinitic.lib.helpers;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import org.apache.commons.io.IOUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-import me.johz.infinitic.lib.data.MaterialJSON;
+import lakmoore.infinitic.lib.data.MaterialJSON;
 
 public class JsonConfigHelper {
 	

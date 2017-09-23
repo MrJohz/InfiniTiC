@@ -1,6 +1,6 @@
-package me.johz.infinitic.client.model;
+package lakmoore.infinitic.client;
 
-import me.johz.infinitic.InfiniTiC;
+import lakmoore.infinitic.InfiniTiC;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;

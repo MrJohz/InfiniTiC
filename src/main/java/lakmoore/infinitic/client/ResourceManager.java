@@ -1,10 +1,10 @@
-package me.johz.infinitic.client;
+package lakmoore.infinitic.client;
 
 import java.io.ByteArrayInputStream;
 
-import me.johz.infinitic.InfiniTiC;
-import me.johz.infinitic.lib.data.LocalizationJSON;
-import me.johz.infinitic.lib.data.MaterialData;
+import lakmoore.infinitic.InfiniTiC;
+import lakmoore.infinitic.lib.data.LocalizationJSON;
+import lakmoore.infinitic.lib.data.MaterialData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;

@@ -1,4 +1,4 @@
-package me.johz.infinitic.lib.errors;
+package lakmoore.infinitic.lib.errors;
 
 public class JSONValidationException extends Exception {
 	

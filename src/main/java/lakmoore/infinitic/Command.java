@@ -1,10 +1,10 @@
-package me.johz.infinitic.client;
+package lakmoore.infinitic;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import me.johz.infinitic.lib.helpers.ClipboardHelper;
-import me.johz.infinitic.lib.helpers.GenericHelper;
+import lakmoore.infinitic.lib.helpers.ClipboardHelper;
+import lakmoore.infinitic.lib.helpers.GenericHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;

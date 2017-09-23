@@ -1,11 +1,11 @@
-package me.johz.infinitic.lib.data;
+package lakmoore.infinitic.lib.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import me.johz.infinitic.lib.errors.JSONValidationException;
-import me.johz.infinitic.lib.helpers.GenericHelper;
+import lakmoore.infinitic.lib.errors.JSONValidationException;
+import lakmoore.infinitic.lib.helpers.GenericHelper;
 
 public class NameList implements IJson {
 	

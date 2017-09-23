@@ -1,9 +1,10 @@
-package me.johz.infinitic.lib.helpers;
+package lakmoore.infinitic.lib.helpers;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.math.NumberUtils;
-import me.johz.infinitic.InfiniTiC;
+
+import lakmoore.infinitic.InfiniTiC;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

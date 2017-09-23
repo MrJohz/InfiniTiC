@@ -1,7 +1,7 @@
-package me.johz.infinitic.lib.data;
+package lakmoore.infinitic.lib.data;
 
-import me.johz.infinitic.InfiniTiC;
-import me.johz.infinitic.lib.errors.JSONValidationException;
+import lakmoore.infinitic.InfiniTiC;
+import lakmoore.infinitic.lib.errors.JSONValidationException;
 
 public class LocalizationJSON implements IJson
 {

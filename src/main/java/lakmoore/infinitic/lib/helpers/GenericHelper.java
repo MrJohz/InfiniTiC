@@ -1,4 +1,4 @@
-package me.johz.infinitic.lib.helpers;
+package lakmoore.infinitic.lib.helpers;
 
 import java.awt.Color;
 import java.io.File;
