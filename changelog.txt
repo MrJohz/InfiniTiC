@@ -1,6 +1,22 @@
 Infini-TiC Changelog
 ====================
 
+v0.1.42
+Build for MC version 1.11.2
+BugFix: Issue #12 and #13 - Mod is now Server Friendly
+
+v0.1.41
+Build for MC version 1.11.2
+BugFix: Issue #9 Mod is now Server Friendly
+
+v0.1.40
+Build for MC version 1.10.2
+BugFix: Issue #6 Black Fluids are now correctly coloured
+BugFix: Issue #9 Mod is now Server Friendly
+
+v0.1.39
+Build for MC version 1.10.2
+
 v0.1.38
 Build for MC version 1.12
 
