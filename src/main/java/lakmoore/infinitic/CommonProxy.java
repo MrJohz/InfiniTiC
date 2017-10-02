@@ -13,6 +13,8 @@ import lakmoore.infinitic.lib.data.MaterialData;
 import lakmoore.infinitic.lib.data.MaterialJSON;
 import lakmoore.infinitic.lib.helpers.GenericHelper;
 import lakmoore.infinitic.lib.helpers.JsonConfigHelper;
+import lakmoore.infinitic.lib.helpers.MapColorHelper;
+import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
@@ -36,11 +38,11 @@ import slimeknights.tconstruct.library.materials.HeadMaterialStats;
 import slimeknights.tconstruct.library.materials.IMaterialStats;
 import slimeknights.tconstruct.library.materials.Material;
 import slimeknights.tconstruct.smeltery.TinkerSmeltery;
-import slimeknights.tconstruct.smeltery.block.BlockMolten;
+import slimeknights.tconstruct.smeltery.block.BlockTinkerFluid;
 
 public class CommonProxy {
 	protected FluidMolten infinifluid;
-	protected BlockMolten infinifluidBlock;
+	protected BlockTinkerFluid infinifluidBlock;
 	protected Item infinifluidItem;
 
 	public void preInit(FMLPreInitializationEvent e) {
@@ -96,7 +98,7 @@ public class CommonProxy {
 		FluidRegistry.registerFluid(infinifluid);
 
 		ResourceLocation regName = new ResourceLocation(InfiniTiC.MODID, name);
-		infinifluidBlock = new BlockMolten(infinifluid);
+		infinifluidBlock = new BlockTinkerFluid(infinifluid, new MaterialLiquid(MapColorHelper.GetMapColor(0xFFFF0000)));
 		infinifluidBlock.setCreativeTab(null)
 			.setUnlocalizedName(InfiniTiC.MODID + "." + name)
 			.setRegistryName(regName);

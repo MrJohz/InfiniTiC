@@ -5,6 +5,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.ArrayList;
 
+import lakmoore.infinitic.BlockInfiniFluid;
 import lakmoore.infinitic.InfiniTiC;
 import lakmoore.infinitic.lib.errors.JSONValidationException;
 import lakmoore.infinitic.lib.helpers.GenericHelper;
@@ -30,7 +31,6 @@ import net.minecraftforge.fluids.FluidRegistry;
 import slimeknights.tconstruct.library.MaterialIntegration;
 import slimeknights.tconstruct.library.TinkerRegistry;
 import slimeknights.tconstruct.library.fluid.FluidMolten;
-import slimeknights.tconstruct.smeltery.block.BlockMolten;
 
 public class MaterialData {
 		
@@ -259,7 +259,7 @@ public class MaterialData {
 		
         name = "molten_" + name;
 		ResourceLocation regName = new ResourceLocation(InfiniTiC.MODID, name);
-	    block = new BlockMolten(fluid)
+		block = new BlockInfiniFluid(fluid)
 		    .setUnlocalizedName(InfiniTiC.MODID + "." + name)  //For localization
 		    .setRegistryName(regName)
 		    .setCreativeTab(null);
