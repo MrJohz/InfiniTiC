@@ -64,7 +64,7 @@
 	        "stonebound": 0.1,
 	        // This is used to define the colour of the tool,
 	        // and also the colour of the liquid.
-	        "color": "#3B5323"
+	        "color": "#3B5323",
 	        "temperature": 200,
 	        "drawspeed": 100,
 	        "projectilespeed": 1.0,
