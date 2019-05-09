@@ -1,0 +1,74 @@
+Infini-TiC Changelog
+====================
+
+v0.1.42
+Build for MC version 1.11.2
+BugFix: Issue #12 and #13 - Mod is now Server Friendly
+
+v0.1.41
+Build for MC version 1.11.2
+BugFix: Issue #9 Mod is now Server Friendly
+
+v0.1.40
+Build for MC version 1.10.2
+BugFix: Issue #6 Black Fluids are now correctly coloured
+BugFix: Issue #9 Mod is now Server Friendly
+
+v0.1.39
+Build for MC version 1.10.2
+
+v0.1.38
+Build for MC version 1.12
+
+v0.1.37
+Built for MC version 1.11.2
+Added "make" property to JSON. "fluid" must be present in this list for the fluid to be made.  If no fluid exists then parts will be crafted using the part builder.
+Added individual traits to toolData section in JSON.
+Added separate "handleDurability" stat to JSON. [thanks to Smartaros for identifying the problem]
+Fixed a crash when adding Projectile ability to a material already registered with that ability.  Please note: Tinkers auto-registers any material that has a 'head' stat as a projectile and does not provide a way to remove it.
+If another mod registers a material, Infini-TiC will now get that material and overwrite the stats/properties set with those from the JSON (instead of making a conflicting material).  Similar to above, it is not expected that you will try to REMOVE a stat type.
+Material names in "Materials and You" will now show correctly [thanks to Isaac_The_Madd for identifying the problem]
+Changed miningSpeed and attack values from int to float, as they should have been.
+
+v0.1.36
+Updated to MC version 1.12
+
+v0.1.28
+Updated to MC version 1.11.2
+New auto build numbers... publishes may skip numbers now.
+Added Forge's update tracking system.
+
+v0.1.7
+Updated to MC version 1.10.2
+Added "/infinitic traits" command.
+Added traits array to JSON.
+Added Bow stats to JSON.
+Added Projectile option to JSON.
+Re-named some inconsistent fields in JSON.
+
+v0.1.6
+Available for MC versions 1.8.9 and 1.9.4
+Updated to MC 1.8.9, Forge 11.15.1.2318, TConstruct 2.2.1, Java 1.8
+NEW JSON format. Should be backward compatible!!??  Check the wiki for an example.
+Added some default values, which should make the JSON parsing a little more forgiving.
+Removed Infini-Buckets (shed a small tear) in favour of Forge Buckets.
+Kept and fixed Infini-Fluids.
+Added "/infinitic hand" command.  Very similar (borrowed from) CraftTweaker.  Formatting tweaks for this mod.
+Added smelting and casting of Gems (hurrah!).
+
+v0.1.5
+Tools and parts are now named correctly (using the "solid" entry from the localizations)
+The "Jagged" modifier can now be applied (using a negative Stonebound value) Thanks to Runeforger678 for raising the issue.
+
+v0.1.4
+Fixed a problem with colouring multiple molten liquids.  Thanks to theshadowake for raising the issue:
+https://github.com/LakMoore/InfiniTiC/issues/2#issuecomment-264995030
+
+Improved localization, can now accept multiple locales and better variations for fluids and buckets.  New JSON is below.
+
+   "localizations": [{
+ 		"locale": "en_US",
+ 		"solid": "Lapis",
+ 		"liquid": "Molten Lapis",
+ 		"bucket": "Lapis Bucket"
+ 	}]

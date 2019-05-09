@@ -1,61 +1,60 @@
-/*
- * Tinkers Construct
- * Master build file
- * 
- * Authors: Sunstrike, ProgWML6
- * Help from AbrarSyed
- */
+import groovy.json.*
 
 buildscript {
     repositories {
         mavenCentral()
-		mavenLocal()
         maven {
-            name = 'ForgeFS'
+            name = 'forge'
             url = 'http://files.minecraftforge.net/maven'
         }
         maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+            name = 'sonatype'
+            url = 'https://oss.sonatype.org/content/repositories/snapshots/'
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
+
+plugins {
+	id "com.matthewprenger.cursegradle" version "1.0.9"
+}
+
+task wrapper(type: Wrapper) {
+   gradleVersion = '2.12' //version required
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
 
 repositories {
     maven {
-        name "CB Maven FS"
-        url "http://chickenbones.net/maven/"
-    }
-    maven {
-        name "ProfMobius Maven FS"
-        url "http://mobiusstrip.eu/maven"
-    }
-    maven {
-        name "DVS1 Maven FS'"
+        name 'DVS1 Maven FS'
         url 'http://dvs1.progwml6.com/files/maven'
-    }
-    maven {
-        name "ForgeFS"
-        url 'http://files.minecraftforge.net/maven'
     }
 }
 
-// Load ForgeGradle
-apply plugin: 'forge'
-group = "boni"
-
 // Define properties file
 ext.configFile = file "build.properties"
+def numbersFile = new File("buildno.properties")	
 
 configFile.withReader {
     // Load config.  It shall from now be referenced as simply config or project.config
     def prop = new Properties()
     prop.load(it)
     project.ext.config = new ConfigSlurper().parse prop
+
+	def numbers = new Properties();
+	numbers.load(numbersFile.newDataInputStream())
+	project.ext.buildNumbers = new ConfigSlurper().parse(numbers)
 }
+
+sourceCompatibility = config.java_version
+targetCompatibility = config.java_version    
+
+version = "${config.minecraft_version}-${buildNumbers.mod_version}.${buildNumbers.build_number}"
+group = 'infinitic'
+archivesBaseName = 'Infini-TiC'
 
 ext.artifact_version_override = 'NotUsed'
 //gitignored config file -- if this has the entry for override it will override the version for local builds
@@ -74,11 +73,8 @@ if (configFile2.exists()){
 }
 
 dependencies {
-    compile "mantle:Mantle:${config.minecraft_version}-${config.mantle_version}:deobf"
-    compile "tconstruct:TConstruct:${config.minecraft_version}-${config.tconstruct_version}:deobf"
-    compile "codechicken:ForgeMultipart:${config.minecraft_version}-${config.FMP_version}:dev"
-    //compile name: 'CodeChickenLib', version: "${config.minecraft_version}-${config.CCLIB_version}", ext: 'jar'
-    //compile name: 'NotEnoughItems', version: "${config.NEI_version}", type: 'jar'
+    deobfCompile "slimeknights.mantle:Mantle:${config.mantle_version}"
+    deobfCompile "slimeknights:TConstruct:${config.tconstruct_version}"
 }
 
 // Finds and sets version data
@@ -98,6 +94,7 @@ task buildInfo {
         ext.buildNum = "DEV.${project.buildInfo.revision}"
     }
 }
+
 ext.artifact_version = 'NFG'
 if (System.getenv().ARTIFACT_VERSION == null && artifact_version_override == 'NotUsed') {
     artifact_version = "${config.mod_version}.${project.buildInfo.buildNum}"
@@ -109,23 +106,22 @@ if (artifact_version_override != 'NotUsed') {
     artifact_version = "${artifact_version_override}"
 }
 
-version = "${config.minecraft_version}-${artifact_version}"
+//version = "${config.minecraft_version}-${artifact_version}"
 
 minecraft {
-    version = config.minecraft_version + "-" + config.forge_version
-    runDir = 'run'
-    replace '${version}', project.version
-}
-
-
-sourceSets {
-    main {
-        resources {
-            srcDir 'resources'
-        }
-		
+    mappings = config.forge_mappings
+    version = config.minecraft_version + '-' + config.forge_version // + '-' + config.minecraft_version
+    if (file('../run').exists()) {
+	    runDir = '../run/eclipse'
+    } else {
+	    runDir = 'eclipse'
     }
+
+	replace '${MODVERSION}', buildNumbers.mod_version + '.' + buildNumbers.build_number
+	replace '${MCVERSION}', config.minecraft_version
+
 }
+
 processResources
 {
     // this will ensure that this task is redone when the versions change.
@@ -135,8 +131,8 @@ processResources
     // Replace stuff in text files, not binaries.
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
-        // Replace version and MCversion
-        expand 'version':artifact_version,'MCversion':config.minecraft_version
+        // Replace version and mc_version
+        expand 'version': config.mod_version, 'mc_version':config.minecraft_version
     }
         
     // Copy everything else that's not text
@@ -144,7 +140,6 @@ processResources
         exclude '**/*.info'
     }
 }
-
 
 // Create deobf dev jars
 task deobfJar(type: Jar) {
@@ -156,28 +151,54 @@ artifacts {
     archives deobfJar
 }
 
-task("uploadJars", dependsOn:"signJar") {
+curseforge {
 
-    description = "uploads JARs"
+	apiKey = project.curseForgeApiKey
+	project {
+		id = '247823'
+		changelog = file('changelog.txt')
+		releaseType = 'release'
+		addGameVersion "${config.minecraft_version}"
 
-    if (project.hasProperty("local_maven") || project.hasProperty("sftp_maven")) {
-        apply plugin: 'maven'
-        uploadArchives {
-            repositories {
-                if(project.hasProperty("local_maven"))
-                {
-                    mavenDeployer {
-                        repository(url: "file://${local_maven}")
-                    }
-                }
-                if(project.hasProperty("sftp_maven")) {
-                    repositories.mavenDeployer {
-                        configuration = configurations.deployerJars
-                        repository(url: "sftp://${sftp_maven}"){
-                            authentication(userName: "${sftp_username}",privateKey: "${sftp_key}")}
-                    }
-                }
-            }
-        }
+		mainArtifact(jar) {
+			displayName = "InfiniTiC-${config.minecraft_version}-${buildNumbers.mod_version}.${buildNumbers.build_number}"
+			relations {
+		        requiredLibrary 'tinkers-construct' // Tinkers Construct is required
+		        requiredLibrary 'mantle' // Mantle is required
+        		}
+		}		
+	}
+
+}
+
+//call curseforge, then update the version file and increment the build number ready for next time
+task lakPublish(dependsOn: 'curseforge') {
+	doLast {
+	    def updateJsonFile = file(System.getProperty("user.home") + '/Dropbox/MinecraftModFiles/versions/infinitic.json')
+	    if (updateJsonFile.exists()) {
+		    def updateJson = new JsonSlurper().parse(updateJsonFile) as Map
+			
+			// Ensure there is a section for this MC version
+			updateJson.get("${minecraft.version}" as String, [:])
+		
+		    // Add to version section
+		    updateJson."${minecraft.version}"."${version}" = "See https://github.com/LakMoore/InfiniTiC/blob/master/changelog.txt"
+		
+		    // Update promos
+		    updateJson.promos."${minecraft.version}-latest" = "${version}"
+		    updateJson.promos."${minecraft.version}-recommended" = "${version}"
+		
+		    updateJsonFile.write(JsonOutput.prettyPrint(JsonOutput.toJson(updateJson)))
+	    }
+	
+	    def cmd = "git tag -a v${buildNumbers.mod_version}.${buildNumbers.build_number} -m ''"
+	    println cmd.execute().text.split().size()
+		//def proc = cmd.execute()
+		//proc.waitFor()
+	    
+	    buildNumbers.build_number = (buildNumbers.build_number.toString().toInteger()) + 1
+	    numbersFile.withWriter {
+	        buildNumbers.toProperties().store(it, "")
+	    }
     }
 }

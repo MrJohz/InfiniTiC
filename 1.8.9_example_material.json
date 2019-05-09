@@ -1,0 +1,56 @@
+{
+	"__comment-name": "An OreDictionary entry will be made (if one does not already exist) using this name.",
+	"name": "Diamond",
+	"__comment-color": "The three colors are all in the format #AARRGGBB.  Tinkers won't let you have fully transparent materials!",
+	"textColor": "#FF45ACA5",
+	"whitelist": {
+		"__comment": "Everything in the whitelist will be added to the OreDictionary with the above name.",
+		"oredict": [],
+		"ingots": [],
+		"nuggets": [],
+		"dusts": [],
+		"gems": ["minecraft:diamond"],
+		"blocks": ["minecraft:diamond_block"],
+		"ores": ["minecraft:diamond_ore"]
+	},
+	"blacklist": {
+		"__comment": "Optionally use the blacklist to exclude specific items.",
+		"oredict": [],
+		"ores": []
+	},
+	"fluidData": {
+		"color": "#FF45ACA5",
+		"density": 2000,
+		"viscosity": 10000,
+		"temperature": 1000,
+		"luminosity": 10,
+		"__comment": "rarity can be COMMON, UNCOMMON, RARE or EPIC",
+		"rarity": "COMMON"
+	},
+	"__comment": "If you do not want to be able to craft the Tool Forge (using blocks of this material) set the following to false.",
+	"canCraftToolForge": true,
+	"toolData": {
+		"harvestLevel": 3,
+		"durability": 500,
+		"extraDurability": -200,
+		"miningspeed": 7,
+		"attack": 6,
+		"handleModifier": 2,
+		"reinforced": 0,
+		"stonebound": -1.0,
+		"color": "#FF45ACA5",
+		"temperature": 200,
+		"__comment": "Tinker's Bows are not included in MC 1.8.9. These stats have no effect.",
+		"drawspeed": 100,
+		"projectilespeed": 1.0,
+		"projectilemass": 2.0,
+		"projectilefragility": 0.9
+	},
+	"localizations": [{
+		"__comment": "The name of the material in various languages.  solid = the material and the tool.  liquid = the name of the fluid.  bucket = the name of the bucket.  To add more languages just add another object with the 4 elements",
+		"locale": "en_US",
+		"solid": "Diamond",
+		"liquid": "Molten Diamond",
+		"bucket": "Diamond Bucket"
+	}]
+}

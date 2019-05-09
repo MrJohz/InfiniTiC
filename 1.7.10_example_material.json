@@ -1,0 +1,86 @@
+	{
+	    // This will be used as the name of the materials and liquid.
+	    // Defaults recipes will be added based on ores/ingots/blocks/
+	    // dusts registered in the oredict based on this name.
+	    "name": "adamantium",
+	
+	    // This block will be shown whenever something is being smelted.
+	    // It is *required*!  (`renderblockMeta` is not, however,
+	    // and defaults to 0.)
+	    // (N.B. TiC has two blocks for ores being smelted and ingots/
+	    // blocks being smelted - InfiniTiC doesn't.  Yet.)
+	    "renderblock": "simpleores:adamantium_block",
+	    "renderblockMeta": 0,
+	    "renderore": "simpleores:adamantium_ore",
+	    "renderoreMeta": 0,
+	
+	    // Smelting recipes will be added for all of the items listed
+	    // in the whitelist automatically.  If there is a block and
+	    // ingot, casting recipes will be added for the first block
+	    // and ingot specified.
+	    "whitelist": {
+	        // These items will be capitalised and prepended with "ore",
+	        // "ingot" etc, and recipes will be added for all items
+	        // registered in the ore dictionary under those names.
+	        "oredict": ["adamantite"],
+	
+	        // ingots  and dust will smelt to one ingot's worth of
+	        // liquid.  Items are registered in minetweaker style
+	        // (modid:itemname[:optional_damagevalue] or ore:oredictname).
+	        "ingots": ["ore:ingotAdamantine"],
+	        "dusts": ["simpleores:adamantium_dust"],
+	
+	        // Blocks will smelt to nine ingot's worth of liquid.
+	        "blocks": [],
+	
+	        // Ores will smelt to two ingot's worth of liquid.
+	        "ores": []
+	    },
+	
+	    // The blacklist will prevent a recipe that would be added
+	    // by the `name` and `whitelist` combo above from being
+	    // added to the smeltery.  Note that while this object
+	    // can have all of the same keys as the `whitelist` object,
+	    // neither of them need to use all of the keys.
+	    "blacklist": {
+	        "oredict": ["adamantiodic_material"],
+	        "ores": ["simpleores:adamantium_ore"]
+	    },
+	
+	    // The data values that the tool will have.
+	    // See https://gist.github.com/bonii-xx/e46f9d9e81e29d796b1b
+	    // for a rough idea of what these mean.  Note, however,
+	    // that a positive `stonebound` value gives a tool the 
+	    // stonebound effect, but a negative one will give the tool
+	    // a jagged effect.
+	    "toolData": {
+	        "ID": 23,
+	        "harvestLevel": 3,
+	        "durability": 43,
+	        "miningspeed": 5,
+	        "attack": 8,
+	        "handleModifier": 2.5,
+	        "reinforced": 3,
+	        "stonebound": 0.1,
+	        // This is used to define the colour of the tool,
+	        // and also the colour of the liquid.
+	        "color": "#3B5323",
+	        "temperature": 200,
+	        "drawspeed": 100,
+	        "projectilespeed": 1.0,
+	        "projectilemass": 2.0,
+	        "projectilefragility": 0.9 
+	    },
+	
+	    // The name of the material in various languages.
+	    // solid = the material and the tool.
+	    // liquid = the name of the fluid
+	    // bucket = the name of the bucket
+	    // To add more languages just add another object with the 4 elements
+	    "localizations": [{
+	        "locale": "en_US",
+	        "solid": "Adamantium",
+	        "liquid": "Molten Adamantium",
+	        "bucket": "Adamantium Bucket"
+	    }]
+	}

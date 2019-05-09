@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "infinitic",
+    "name": "Infini-TiC",
+    "description": "Infinitise Tinker's Construct.",
+    "version": "${version}",
+    "mcversion": "${mc_version}",
+    "url": "http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/wip-mods/2719989-infini-tic-another-tinkers-construct-add-on",
+    "updateUrl": "",
+    "authorList": ["Johz", "LakMoore"],
+    "credits": "Tinker's Construct peeps.",
+    "logoFile": "https://media-curse.cursecdn.com/attachments/193/352/b4ed505aa6360cb1352f3cb1504b5cfe.png",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
